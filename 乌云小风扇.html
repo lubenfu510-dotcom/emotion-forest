@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#fff3c8">
+<title>乌云小风扇 · 吹走一点烦恼</title>
+<style>
+:root{--ink:#34516a;--muted:#8a9cab;--coral:#ff917c;--yellow:#ffd76e;--sky:#d9f3ff;--paper:#fffdf6;--shadow:0 24px 70px #50678018}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;color:var(--ink)}
+body{min-height:100vh;background:radial-gradient(ellipse at 8% 10%,#fffdf0 0,transparent 31%),radial-gradient(ellipse at 92% 92%,#cbf1e4 0,transparent 31%),linear-gradient(140deg,#fff5d8,#e9f8ff 57%,#e8f5ed);display:grid;place-items:center;padding:26px 20px}
+button{font:inherit;color:inherit}
+.shell{width:min(1110px,100%);margin:auto}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:0 auto 17px;padding:0 6px;max-width:1010px}
+.brand{display:flex;align-items:center;gap:11px}.brand-mark{width:43px;height:43px;border:1px solid #f3e6c4;border-radius:16px;background:#fffdf2;display:grid;place-items:center;font-size:23px;box-shadow:0 5px 18px #927a4514}.brand-copy b{display:block;font:700 16px/1.2 "STKaiti","KaiTi","Songti SC",serif;letter-spacing:.06em}.brand-copy span{display:block;margin-top:4px;color:#9aa99f;font-size:9px;letter-spacing:.15em}
+.top-actions{display:flex;gap:8px}.quiet-button{border:1px solid #e4e9dd;background:#ffffff9c;border-radius:99px;padding:9px 13px;color:#83938d;font-size:11px;cursor:pointer;transition:.2s}.quiet-button:hover{background:#fff;transform:translateY(-1px)}.quiet-button[aria-pressed="true"]{color:#6e9285;border-color:#dce8d8;background:#fffef5}
+.layout{display:grid;grid-template-columns:minmax(0,1.48fr) minmax(275px,.75fr);gap:20px;align-items:stretch;max-width:1010px;margin:auto}
+.scene-card,.side-card{background:var(--paper);border:1px solid #eee9d8;border-radius:30px;box-shadow:var(--shadow)}
+.scene-card{padding:13px;overflow:hidden}.scene{height:550px;position:relative;overflow:hidden;border-radius:22px;background:linear-gradient(180deg,#bceaff 0%,#d8f5ff 53%,#fff0be 100%);isolation:isolate;transition:background .75s}
+.scene:after{content:"";position:absolute;z-index:0;inset:auto -8% -116px;height:230px;border-radius:50% 50% 0 0;background:linear-gradient(180deg,#c5edbb,#a9dfb5);transition:transform .8s,background .8s}
+.glow{position:absolute;z-index:0;inset:-40px;background:radial-gradient(ellipse at 78% 6%,#fff6b9b0 0,transparent 30%),radial-gradient(ellipse at 20% 44%,#ffffff52 0,transparent 28%);animation:glow 8s ease-in-out infinite alternate}
+.sun{position:absolute;z-index:1;top:52px;right:11%;width:83px;height:83px;border-radius:50%;background:radial-gradient(circle at 38% 35%,#fff6c3,#ffd66c 70%);box-shadow:0 0 0 14px #ffefaa50,0 0 65px #ffd96c9c;opacity:.76;transform:scale(.82);transition:all .9s cubic-bezier(.2,.8,.3,1)}
+.sun-face{position:absolute;inset:0;display:grid;place-items:center;color:#cd964c;font-size:21px;letter-spacing:8px;padding-left:8px;opacity:.7}
+.cloud-bank{position:absolute;inset:0;z-index:3}
+.cloud{position:absolute;width:clamp(125px,20vw,166px);height:95px;display:grid;place-items:center;isolation:isolate;cursor:pointer;user-select:none;transition:filter .2s,opacity .35s;--cloud-a:#859bb4;--cloud-b:#647d9c}
+.cloud:hover{filter:brightness(1.06) drop-shadow(0 5px 6px #5a718338)}
+.cloud svg{position:absolute;z-index:-1;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 7px 7px #63779124)}
+.cloud-shape{fill:var(--cloud-a)}
+.cloud-label{max-width:82%;padding-top:12px;text-align:center;color:#fff;font:700 12px/1.45 "PingFang SC","Microsoft YaHei",sans-serif;text-shadow:0 1px 3px #52647b45;letter-spacing:.02em;pointer-events:none}
+.cloud:nth-child(1){left:10%;top:16%;transform:rotate(-5deg);--cloud-a:#8199b3;--cloud-b:#637d9b}
+.cloud:nth-child(2){right:9%;top:12%;transform:rotate(4deg);--cloud-a:#929eb0;--cloud-b:#728198}
+.cloud:nth-child(3){left:1%;top:42%;transform:rotate(3deg);--cloud-a:#829ab3;--cloud-b:#617f9e}
+.cloud:nth-child(4){right:1%;top:39%;transform:rotate(-4deg);--cloud-a:#8b9cb2;--cloud-b:#6a7f9c}
+.cloud:nth-child(5){left:11%;top:66%;transform:rotate(-3deg);--cloud-a:#8c9cb0;--cloud-b:#6b809a}
+.cloud:nth-child(6){right:11%;top:64%;transform:rotate(5deg);--cloud-a:#829ab3;--cloud-b:#617e9e}
+.cloud:nth-child(7){left:50%;top:25%;transform:translateX(-50%) rotate(1deg);--cloud-a:#9ba6b4;--cloud-b:#77879b}
+.cloud.flying{animation:fly-away .82s cubic-bezier(.2,.7,.25,1) forwards;pointer-events:none}
+.cloud.gone{display:none}
+.scene-head{position:absolute;z-index:5;left:23px;top:20px}.scene-kicker{font-size:9px;letter-spacing:.18em;color:#6292a1}.scene-title{font:600 16px/1.4 "STKaiti","KaiTi","Songti SC",serif;color:#4c7585;margin-top:5px}.cloud-count{position:absolute;z-index:5;right:20px;top:19px;padding:7px 11px;border:1px solid #ffffffa0;border-radius:99px;background:#ffffff75;color:#648c99;font-size:10px;backdrop-filter:blur(5px)}.cloud-count b{font:700 14px Georgia,serif;color:#547f8a;margin-right:3px}
+.fan-button{position:absolute;z-index:4;left:50%;top:58%;width:204px;height:259px;transform:translate(-50%,-12%);padding:0;border:0;background:transparent;cursor:pointer;touch-action:manipulation;filter:drop-shadow(0 12px 7px #64725622);transition:filter .2s}.fan-button:hover{filter:drop-shadow(0 15px 8px #6472562e)}.fan-button:focus-visible{outline:3px solid #f3aa78;outline-offset:5px;border-radius:50%}
+.fan-svg{width:100%;height:100%;overflow:visible}.fan-cage{fill:#fff9e5;stroke:#d2a65f;stroke-width:5}.fan-inner{fill:#fff1cc;stroke:#e0bd78;stroke-width:2}.fan-ring{fill:none;stroke:#ddb875;stroke-width:2;opacity:.72}.fan-spokes{fill:none;stroke:#d3ae6e;stroke-width:1.8;opacity:.7}.blade-set{transform-box:fill-box;transform-origin:50% 50%;transition:transform .28s cubic-bezier(.2,.8,.2,1)}.blade{fill:#fb9d79;stroke:#e88467;stroke-width:1.2;opacity:.95}.blade:nth-child(2){fill:#ffcb67;stroke:#eab64f}.blade:nth-child(3){fill:#80cdbf;stroke:#62b6a8}.fan-hub{fill:#fff8de;stroke:#e3b966;stroke-width:4}.fan-hub-dot{fill:#f1a16f}.fan-neck{fill:#f9cb70;stroke:#daa94f;stroke-width:3}.fan-base{fill:#ffda80;stroke:#d9ac58;stroke-width:3}.base-shine{fill:none;stroke:#fff4c4;stroke-width:4;stroke-linecap:round}.fan-click{font-size:9px;fill:#9d906e;letter-spacing:1.6px}
+.fan-button.spinning .blade-set{animation:spin .44s linear infinite}.fan-button.spinning{filter:drop-shadow(0 0 17px #fff1a9aa) drop-shadow(0 12px 7px #64725622)}
+.wind{position:absolute;z-index:2;left:50%;top:43%;width:min(390px,75%);height:145px;transform:translateX(-50%);opacity:0;pointer-events:none}.wind path{fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round;stroke-dasharray:22 19;filter:drop-shadow(0 2px 2px #81cddf55)}.scene.blowing .wind{opacity:.88;animation:wind-sweep .65s ease-out both}.scene.blowing .wind path{animation:wind-dash .5s linear infinite}
+.sparkle{position:absolute;z-index:1;color:#fffaf0;font-size:20px;opacity:.75;animation:float 4s ease-in-out infinite}.sparkle.s1{top:39%;left:42%;animation-delay:-2s}.sparkle.s2{top:72%;right:37%;font-size:14px;animation-delay:-1s}.sparkle.s3{top:20%;right:36%;font-size:12px;animation-delay:-3s}
+.ending{position:absolute;z-index:8;inset:0;display:grid;align-content:center;justify-items:center;text-align:center;background:#fff8d14d;backdrop-filter:blur(1px);pointer-events:none;opacity:0;transform:scale(.96);transition:opacity .65s,transform .65s}.ending-icon{font-size:41px;line-height:1;filter:drop-shadow(0 4px 5px #cfad4b33)}.ending b{margin-top:11px;color:#537f72;font:700 27px "STKaiti","KaiTi",serif}.ending span{margin-top:7px;color:#6e9987;font:13px/1.8 "STKaiti","KaiTi",serif}
+.scene-status{position:absolute;z-index:6;left:50%;bottom:93px;transform:translateX(-50%);padding:7px 12px;border:1px solid #ffffffa8;border-radius:99px;background:#ffffffb5;color:#658b91;font-size:10px;white-space:nowrap;box-shadow:0 4px 13px #647a6b12;transition:.25s}.scene-status strong{color:#e08c6e;font-weight:700}
+.blow-button{position:absolute;z-index:7;left:50%;bottom:22px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;padding:12px 22px 12px 16px;border:1px solid #f5c18c;border-radius:99px;background:linear-gradient(135deg,#fff4cd,#ffe5a4);color:#89653c;box-shadow:0 6px 0 #e8be75,0 12px 20px #7a61411e;cursor:pointer;white-space:nowrap;transition:transform .15s,box-shadow .15s,filter .2s}.blow-button:hover{filter:brightness(1.025);transform:translate(-50%,-1px)}.blow-button:active,.blow-button.pressed{transform:translate(-50%,4px) scale(.98);box-shadow:0 2px 0 #e8be75,0 6px 15px #7a61411e}.blow-icon{width:26px;height:26px;display:grid;place-items:center;border-radius:50%;background:#ffbd85;font-size:15px}.blow-copy{text-align:left;font-size:12px;font-weight:750;line-height:1.15}.blow-copy small{display:block;margin-top:4px;color:#b18559;font-size:9px;font-weight:500;letter-spacing:.04em}
+.scene.all-clear{background:linear-gradient(180deg,#96ddff 0%,#c8f1ff 51%,#fff0b9 100%)}.scene.all-clear:after{background:linear-gradient(180deg,#bfedab,#91d7a6);transform:translateY(-8px)}.scene.all-clear .sun{opacity:1;transform:scale(1.12);box-shadow:0 0 0 18px #ffefaa66,0 0 80px #ffd96cbd}.scene.all-clear .fan-button{animation:happy-bob 1.2s ease-in-out infinite alternate}.scene.all-clear .ending{opacity:1;transform:scale(1)}.scene.all-clear .scene-status{opacity:0}
+.side-card{padding:30px 28px;display:flex;flex-direction:column}.eyebrow{font-size:9px;letter-spacing:.2em;color:#a2ac9e}.side-card h1{font:700 clamp(30px,4vw,42px)/1.25 "STKaiti","KaiTi","Songti SC",serif;letter-spacing:.01em;margin:13px 0 9px;color:#37596b}.side-card h1 em{font-style:normal;color:#ed9878}.intro{margin:0;color:#82969a;font:13px/1.9 "STKaiti","KaiTi","Songti SC",serif}.divider{border:0;border-top:1px dashed #e8e6d9;width:100%;margin:21px 0 17px}
+.progress-top{display:flex;justify-content:space-between;align-items:baseline;color:#82958e;font-size:10px}.progress-top strong{font:600 20px Georgia,serif;color:#67978c}.progress-track{height:9px;border-radius:99px;background:#edf1e7;margin-top:9px;overflow:hidden}.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#f7cf71,#f5a47c 65%,#91cdb1);border-radius:inherit;transition:width .42s ease;box-shadow:0 0 12px #e9bd7770}
+.message{min-height:82px;margin-top:17px;padding:14px 14px;border-radius:16px;background:#f5f7ec;color:#7e938b;font:12px/1.7 "STKaiti","KaiTi","Songti SC",serif;transition:.35s}.message strong{display:block;color:#5e8676;font-size:14px;margin-bottom:2px}.message .message-emoji{float:right;font-size:22px;margin:-3px 0 0 8px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:auto;padding-top:21px}.stat{border:1px solid #eff0e6;border-radius:15px;padding:12px;background:#fffef9}.stat span{display:block;color:#a0aaa0;font-size:9px}.stat b{display:block;margin-top:5px;color:#68827a;font:600 18px Georgia,"PingFang SC",serif}.restart{margin-top:13px;padding:10px;border:1px solid #e8e9df;border-radius:99px;background:transparent;color:#91a097;font-size:10px;cursor:pointer;transition:.2s}.restart:hover{border-color:#d7dfd5;background:#f8faf2;color:#6c887b}.footer-note{text-align:center;color:#a3aca2;font:11px "STKaiti","KaiTi",serif;margin:16px 0 0;letter-spacing:.04em}
+.shell.is-done .cloud-count{background:#ffffff9c;color:#6a9a8b}.shell.is-done .cloud-count b{color:#6a9a8b}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes glow{from{transform:translateX(-1%)}to{transform:translateX(1%)}}@keyframes float{0%,100%{transform:translateY(0) rotate(-7deg)}50%{transform:translateY(-11px) rotate(8deg)}}@keyframes wind-sweep{0%{transform:translate(-63%,8px) scale(.8);opacity:0}35%{opacity:1}100%{transform:translate(-28%,-5px) scale(1.08);opacity:0}}@keyframes wind-dash{to{stroke-dashoffset:-41}}@keyframes fly-away{0%{opacity:1;transform:translate(0,0) scale(1) rotate(0)}18%{opacity:1;transform:translate(calc(var(--dx)*.18),calc(var(--dy)*.18)) scale(1.04) rotate(calc(var(--rot)*.18))}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.48) rotate(var(--rot))}}
+@keyframes happy-bob{from{transform:translate(-50%,-12%) rotate(-1.5deg)}to{transform:translate(-50%,-15%) rotate(1.5deg)}}
+@media(max-width:760px){body{padding:13px 11px 22px;place-items:start center}.topbar{margin-bottom:12px}.layout{grid-template-columns:1fr;gap:12px}.scene-card{padding:9px;border-radius:24px}.scene{height:min(65vh,505px);min-height:420px;border-radius:17px}.scene-head{top:15px;left:17px}.scene-title{font-size:14px}.cloud-count{top:14px;right:14px}.cloud{width:clamp(114px,35vw,150px);height:88px}.cloud:nth-child(1){left:1%;top:17%}.cloud:nth-child(2){right:0;top:15%}.cloud:nth-child(3){left:-4%;top:39%}.cloud:nth-child(4){right:-4%;top:38%}.cloud:nth-child(5){left:0;top:61%}.cloud:nth-child(6){right:0;top:62%}.cloud:nth-child(7){top:27%}.cloud-label{font-size:11px}.fan-button{top:58%;width:180px;height:230px;transform:translate(-50%,-12%)}.scene-status{bottom:80px}.blow-button{bottom:13px;padding:11px 18px 11px 13px}.side-card{padding:21px 22px 18px;border-radius:24px}.side-card h1{font-size:32px;margin:8px 0 5px}.intro{font-size:12px}.divider{margin:14px 0 12px}.message{min-height:66px;margin-top:12px}.stats{padding-top:14px}.footer-note{margin-top:13px}}
+@media(max-width:390px){.top-actions .quiet-button{padding:8px 10px}.brand-copy b{font-size:14px}.brand-mark{width:38px;height:38px}.scene{min-height:400px}.cloud{width:clamp(106px,34vw,130px);height:78px}.cloud-label{font-size:10px}.fan-button{width:162px;height:207px;top:59%}.cloud:nth-child(3){left:-7%}.cloud:nth-child(4){right:-7%}.cloud:nth-child(7){top:27%}.scene-status{font-size:9px}}
+/* A compact follow-up card keeps the focus on the fan game above. */
+.compact-card{padding:16px 18px 14px;gap:0}.compact-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.compact-heading h2{margin:4px 0 0;color:#37596b;font:700 22px/1.2 "STKaiti","KaiTi","Songti SC",serif}.compact-heading>strong{color:#6c9f91;font:700 22px Georgia,serif}.compact-card .progress-track{margin:12px 0 10px;height:7px}.compact-card .message{min-height:0;margin:0;padding:10px 12px;border-radius:14px;font-size:11px;line-height:1.5}.compact-card .message-emoji{margin-right:7px}.compact-stats{display:flex;gap:8px;margin-top:9px}.compact-stats>div{flex:1;display:flex;justify-content:space-between;align-items:center;gap:6px;padding:8px 10px;border:1px solid #eff0e6;border-radius:12px;background:#fffef9}.compact-stats span{font-size:9px;color:#8f9a92}.compact-stats b{font:600 13px Georgia,"PingFang SC",serif;color:#68827a;white-space:nowrap}
+@media(max-width:760px){.side-card.compact-card{padding:14px 16px 12px;border-radius:20px}.compact-heading h2{font-size:20px}.compact-card .progress-track{margin:9px 0 8px}.compact-card .message{padding:9px 10px}.compact-stats{margin-top:7px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+<style>
+@media(max-width:760px){.cloud{width:clamp(80px,24.5vw,105px);height:62px}.cloud-label{padding-top:8px;font-size:9px}.fan-button{width:126px;height:161px}}
+@media(max-width:390px){.cloud{width:clamp(74px,23.8vw,91px);height:55px}.fan-button{width:113px;height:145px}}
+<style>
+.cloud{animation:cloud-drift 4.2s ease-in-out infinite alternate}.cloud:nth-child(2n){animation-duration:5.1s;animation-delay:-1.1s}.cloud:nth-child(3n){animation-duration:3.7s;animation-delay:-2s}.scene.thundering{animation:storm-flash .72s ease-out}.scene.thundering .cloud{filter:brightness(.82) saturate(.72)}.shell.storming .progress-fill{background:linear-gradient(90deg,#9aa9c6,#7786ac)}@keyframes storm-flash{0%,100%{box-shadow:none;filter:none}18%,34%{box-shadow:inset 0 0 90px #5e668b80;filter:brightness(.78)}26%{box-shadow:none;filter:brightness(1.16)}}@keyframes cloud-drift{from{translate:0 3px}to{translate:8px -9px}}
+</style>
+</head>
+<body>
+<main class="shell" id="game">
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark" aria-hidden="true">☀️</div><div class="brand-copy"><b>晴天练习簿</b><span>A LITTLE BRIGHTER, ONE BREATH AT A TIME</span></div></div>
+    <div class="top-actions"><button class="quiet-button" id="soundToggle" type="button" aria-label="关闭音效" aria-pressed="true">♫ 音效开</button><button class="quiet-button" id="restartTop" type="button">↻　重新开始</button></div>
+  </header>
+  <div class="layout">
+    <section class="scene-card" aria-label="乌云小风扇游戏区域">
+      <div class="scene" id="scene">
+        <div class="glow" aria-hidden="true"></div>
+        <div class="sun" aria-hidden="true"><span class="sun-face">• ‿ •</span></div>
+        <div class="scene-head"><div class="scene-kicker">A BREATH OF FRESH AIR</div><div class="scene-title">让烦恼轻一点点</div></div>
+        <div class="cloud-count" aria-live="polite"><b id="cloudCount">07</b> <span id="cloudCountLabel">朵乌云还在</span></div>
+        <span class="sparkle s1" aria-hidden="true">✦</span><span class="sparkle s2" aria-hidden="true">✧</span><span class="sparkle s3" aria-hidden="true">✦</span>
+        <svg class="wind" viewBox="0 0 400 150" aria-hidden="true"><path d="M24 43 C100 12 150 76 236 43 S345 20 382 50"/><path d="M5 82 C82 50 147 112 222 82 S340 62 393 88"/><path d="M52 121 C126 93 163 138 254 113 S342 100 372 121"/></svg>
+        <div class="cloud-bank" id="cloudBank" aria-label="写着烦恼的乌云">
+          <div class="cloud" data-worry="事情堆成山" role="button" tabindex="0" aria-label="乌云：事情堆成山">
+            <svg viewBox="0 0 180 100" aria-hidden="true"><defs><linearGradient id="cloudFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--cloud-a)"/><stop offset="1" stop-color="var(--cloud-b)"/></linearGradient></defs><path class="cloud-shape" d="M31 76C14 76 7 65 9 53c2-13 13-21 26-20C39 14 52 6 68 9c12 2 20 11 22 22 10-11 27-12 38-4 7 5 10 12 10 20 16-1 27 9 27 22 0 12-9 20-23 20H34C33 89 31 83 31 76Z"/></svg><span class="cloud-label">事情堆成山</span>
+          </div>
+          <div class="cloud" data-worry="消息还没回" role="button" tabindex="0" aria-label="乌云：消息还没回">
+            <svg viewBox="0 0 180 100" aria-hidden="true"><path class="cloud-shape" d="M31 76C14 76 7 65 9 53c2-13 13-21 26-20C39 14 52 6 68 9c12 2 20 11 22 22 10-11 27-12 38-4 7 5 10 12 10 20 16-1 27 9 27 22 0 12-9 20-23 20H34C33 89 31 83 31 76Z"/></svg><span class="cloud-label">消息还没回</span>
+          </div>
+          <div class="cloud" data-worry="又开始想太多" role="button" tabindex="0" aria-label="乌云：又开始想太多">
+            <svg viewBox="0 0 180 100" aria-hidden="true"><path class="cloud-shape" d="M31 76C14 76 7 65 9 53c2-13 13-21 26-20C39 14 52 6 68 9c12 2 20 11 22 22 10-11 27-12 38-4 7 5 10 12 10 20 16-1 27 9 27 22 0 12-9 20-23 20H34C33 89 31 83 31 76Z"/></svg><span class="cloud-label">又开始想太多</span>
+          </div>
+          <div class="cloud" data-worry="状态不在线" role="button" tabindex="0" aria-label="乌云：状态不在线">
+            <svg viewBox="0 0 180 100" aria-hidden="true"><path class="cloud-shape" d="M31 76C14 76 7 65 9 53c2-13 13-21 26-20C39 14 52 6 68 9c12 2 20 11 22 22 10-11 27-12 38-4 7 5 10 12 10 20 16-1 27 9 27 22 0 12-9 20-23 20H34C33 89 31 83 31 76Z"/></svg><span class="cloud-label">状态不在线</span>
+          </div>
+          <div class="cloud" data-worry="deadline 靠近了" role="button" tabindex="0" aria-label="乌云：deadline 靠近了">
+            <svg viewBox="0 0 180 100" aria-hidden="true"><path class="cloud-shape" d="M31 76C14 76 7 65 9 53c2-13 13-21 26-20C39 14 52 6 68 9c12 2 20 11 22 22 10-11 27-12 38-4 7 5 10 12 10 20 16-1 27 9 27 22 0 12-9 20-23 20H34C33 89 31 83 31 76Z"/></svg><span class="cloud-label">deadline 靠近了</span>
+          </div>
+          <div class="cloud" data-worry="计划又被打乱" role="button" tabindex="0" aria-label="乌云：计划又被打乱">
+            <svg viewBox="0 0 180 100" aria-hidden="true"><path class="cloud-shape" d="M31 76C14 76 7 65 9 53c2-13 13-21 26-20C39 14 52 6 68 9c12 2 20 11 22 22 10-11 27-12 38-4 7 5 10 12 10 20 16-1 27 9 27 22 0 12-9 20-23 20H34C33 89 31 83 31 76Z"/></svg><span class="cloud-label">计划又被打乱</span>
+          </div>
+          <div class="cloud" data-worry="怕自己做不好" role="button" tabindex="0" aria-label="乌云：怕自己做不好">
+            <svg viewBox="0 0 180 100" aria-hidden="true"><path class="cloud-shape" d="M31 76C14 76 7 65 9 53c2-13 13-21 26-20C39 14 52 6 68 9c12 2 20 11 22 22 10-11 27-12 38-4 7 5 10 12 10 20 16-1 27 9 27 22 0 12-9 20-23 20H34C33 89 31 83 31 76Z"/></svg><span class="cloud-label">怕自己做不好</span>
+          </div>
+        </div>
+        <button class="fan-button" id="fanButton" type="button" aria-label="点击小风扇吹走乌云">
+          <svg class="fan-svg" viewBox="0 0 220 280" aria-hidden="true">
+            <circle class="fan-cage" cx="110" cy="93" r="76"/><circle class="fan-inner" cx="110" cy="93" r="66"/><circle class="fan-ring" cx="110" cy="93" r="57"/><circle class="fan-ring" cx="110" cy="93" r="43"/>
+            <path class="fan-spokes" d="M110 18v150M35 93h150M57 40l106 106M163 40 57 146M81 24l58 138M37 63l146 60M37 123l146-60M81 162l58-138"/>
+            <g class="blade-set"><path class="blade" d="M109 89C88 72 67 46 77 32c10-14 32 5 39 47l-7 10Z"/><path class="blade" d="M114 91c27-1 60 4 63 21 3 17-26 22-62-5l-1-16Z"/><path class="blade" d="M110 98c-7 26-21 56-38 53-17-3-15-32 23-57l15 4Z"/></g>
+            <circle class="fan-hub" cx="110" cy="93" r="10"/><circle class="fan-hub-dot" cx="110" cy="93" r="3.5"/>
+            <path class="fan-neck" d="M100 165h20v61h-20z"/><path class="fan-base" d="M74 229c6-10 19-15 36-15s30 5 36 15l12 16H62l12-16Z"/><path class="base-shine" d="M85 239h50"/><text class="fan-click" x="110" y="268" text-anchor="middle">点我吹风</text>
+          </svg>
+        </button>
+        <div class="scene-status" id="sceneStatus" aria-live="polite">小风扇准备好了，<strong>点一点</strong>试试</div>
+        <button class="blow-button" id="blowButton" type="button"><span class="blow-icon" aria-hidden="true">↗</span><span class="blow-copy">吹一吹<small>点风扇，或点这里</small></span></button>
+        <div class="ending" id="ending" aria-live="polite"><div class="ending-icon">🌈</div><b>乌云都散啦！</b><span>你已经很努力了，接下来慢慢来就好。</span></div>
+      </div>
+    </section>
+    <aside class="side-card compact-card">
+      <div class="compact-heading"><div><div class="eyebrow">晴朗进度</div><h2>吹走一点点</h2></div><strong id="progressText">0%</strong></div>
+      <div class="progress-track" role="progressbar" aria-label="晴朗进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="message" id="message" aria-live="polite"><span class="message-emoji" aria-hidden="true">🍃</span><strong>先吹走一朵云</strong>慢慢呼气就好。</div>
+      <div class="compact-stats"><div><span>吹走的云</span><b id="clearedCount">0 / 7</b></div><div><span>送出的清风</span><b id="gustCount">0 次</b></div></div>
+    </aside>
+  </div>
+</main>
+<script>
+(()=>{
+  const shell=document.getElementById('game');
+  const scene=document.getElementById('scene');
+  const fan=document.getElementById('fanButton');
+  let clouds=[...document.querySelectorAll('.cloud')];
+  const count=document.getElementById('cloudCount');
+  const countLabel=document.getElementById('cloudCountLabel');
+  const fill=document.getElementById('progressFill');
+  const progressText=document.getElementById('progressText');
+  const progressBar=document.getElementById('progressBar');
+  const clearedCount=document.getElementById('clearedCount');
+  const gustCount=document.getElementById('gustCount');
+  const status=document.getElementById('sceneStatus');
+  const message=document.getElementById('message');
+  const initialCloudTotal=clouds.length;
+  const total=()=>clouds.length;
+  let cleared=0,gusts=0,busy=false,fanTimer,actionTimer,stormTimer,inactivity=0,thunderBusy=false,spawnIndex=0;
+  let soundOn=true,audioContext=null,noiseBuffer=null,soundTimers=[];
+  const extraWorries=['担心来不及','突然很烦躁','觉得自己不够好','脑子停不下来','害怕被否定','事情又变多了'];
+  const stormSpots=[{left:'5%',top:'12%'},{left:'36%',top:'8%'},{left:'66%',top:'14%'},{left:'4%',top:'40%'},{left:'70%',top:'42%'},{left:'11%',top:'65%'},{left:'41%',top:'58%'},{left:'68%',top:'66%'},{left:'30%',top:'30%'},{left:'55%',top:'35%'}];
+  const notes=[
+    ['轻一点了','每吹走一朵，天空就亮一点。'],
+    ['很好，就这样','事情可以一件一件来。'],
+    ['给自己一点空间','慢一点，也是在往前走。'],
+    ['风正在帮忙','你不必独自扛着所有事。'],
+    ['快要晴起来了','看，已经有阳光透进来啦。'],
+    ['呼吸也算进步','这一刻，先照顾好自己。'],
+    ['属于你的晴天','希望你带着轻一点的心继续出发。']
+  ];
+  function update(){
+    const active=clouds.filter(c=>!c.classList.contains('gone')).length;
+    const left=active,percent=active===0?100:Math.round(cleared/Math.max(1,total())*100);
+    count.textContent=String(left).padStart(2,'0');
+    countLabel.textContent=left===0?'乌云已散尽':'朵乌云还在';
+    fill.style.width=percent+'%';progressText.textContent=percent+'%';progressBar.setAttribute('aria-valuenow',String(percent));
+    clearedCount.textContent=`${cleared} / ${total()}`;gustCount.textContent=`${gusts} 次`;
+  }
+  function setMessage(title,copy,emoji='🍃'){
+    message.innerHTML=`<span class="message-emoji" aria-hidden="true">${emoji}</span><strong>${title}</strong>${copy}`;
+  }
+  function getAudio(){
+    if(!soundOn)return null;
+    if(!audioContext){
+      const Audio=window.AudioContext||window.webkitAudioContext;
+      if(!Audio)return null;
+      audioContext=new Audio();
+      const size=Math.floor(audioContext.sampleRate*.75);
+      noiseBuffer=audioContext.createBuffer(1,size,audioContext.sampleRate);
+      const data=noiseBuffer.getChannelData(0);
+      for(let i=0;i<size;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/size,.22);
+    }
+    if(audioContext.state==='suspended')audioContext.resume().catch(()=>{});
+    return audioContext;
+  }
+  function playWhoosh(target,sceneRect){
+    const ctx=getAudio();if(!ctx)return;
+    const now=ctx.currentTime,source=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();
+    source.buffer=noiseBuffer;filter.type='lowpass';filter.frequency.setValueAtTime(300,now);filter.frequency.exponentialRampToValueAtTime(1500,now+.19);filter.frequency.exponentialRampToValueAtTime(480,now+.62);
+    gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.12,now+.09);gain.gain.exponentialRampToValueAtTime(.0001,now+.67);
+    source.connect(filter);filter.connect(gain);
+    if(ctx.createStereoPanner){const pan=ctx.createStereoPanner(),rect=target.getBoundingClientRect();pan.pan.value=Math.max(-.7,Math.min(.7,((rect.left+rect.width/2)-(sceneRect.left+sceneRect.width/2))/(sceneRect.width/2)));gain.connect(pan);pan.connect(ctx.destination)}else gain.connect(ctx.destination);
+    source.start(now);source.stop(now+.69);
+  }
+  function playPop(){
+    const ctx=getAudio();if(!ctx)return;
+    const now=ctx.currentTime,osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='sine';osc.frequency.setValueAtTime(420,now);osc.frequency.exponentialRampToValueAtTime(760,now+.085);
+    gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.085,now+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+.14);osc.connect(gain);gain.connect(ctx.destination);osc.start(now);osc.stop(now+.15);
+  }
+  function playSunshine(){
+    const ctx=getAudio();if(!ctx)return;
+    [523.25,659.25,783.99].forEach((frequency,index)=>{const now=ctx.currentTime+index*.13,osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='sine';osc.frequency.value=frequency;gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.065,now+.025);gain.gain.exponentialRampToValueAtTime(.0001,now+.58);osc.connect(gain);gain.connect(ctx.destination);osc.start(now);osc.stop(now+.6)});
+  }
+  function scheduleSound(fn,delay){const timer=setTimeout(()=>{soundTimers=soundTimers.filter(id=>id!==timer);fn()},delay);soundTimers.push(timer)}
+  function playThunder(){const ctx=getAudio();if(!ctx)return;const now=ctx.currentTime,source=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();source.buffer=noiseBuffer;filter.type='lowpass';filter.frequency.setValueAtTime(180,now);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.12,now+.04);gain.gain.exponentialRampToValueAtTime(.0001,now+.72);source.connect(filter);filter.connect(gain);gain.connect(ctx.destination);source.start(now);source.stop(now+.75)}
+  function bindCloud(cloud){
+    cloud.addEventListener('click',e=>{e.stopPropagation();blow(cloud)});
+    cloud.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();blow(cloud)}});
+  }
+  function allClear(){return clouds.every(c=>c.classList.contains('gone'))}
+  function addCloud(){
+    if(shell.classList.contains('is-done')||total()>=11)return;
+    const source=clouds[0],cloud=source.cloneNode(true);
+    const word=extraWorries[Math.floor(Math.random()*extraWorries.length)];
+    const spot=stormSpots[spawnIndex++%stormSpots.length];
+    cloud.className='cloud';cloud.dataset.worry=word;cloud.setAttribute('aria-label','乌云：'+word);
+    cloud.querySelector('.cloud-label').textContent=word;
+    cloud.style.left=spot.left;cloud.style.top=spot.top;cloud.style.right='auto';cloud.style.bottom='auto';cloud.style.opacity='0';cloud.style.transform='translateY(-10px) scale(.85)';document.getElementById('cloudBank').appendChild(cloud);
+    clouds.push(cloud);bindCloud(cloud);requestAnimationFrame(()=>{cloud.style.opacity='1';cloud.style.transform=''});update();
+  }
+  function triggerThunder(){
+    if(thunderBusy||shell.classList.contains('is-done'))return;
+    thunderBusy=true;cleared=Math.max(0,cleared-1);update();scene.classList.add('thundering');shell.classList.add('storming');
+    playThunder();status.innerHTML='<strong>轰隆——</strong>乌云变多了，快吹走它们';
+    setMessage('打雷啦，晴朗进度下降了','不及时吹走乌云，它们会越聚越多。','⛈️');
+    setTimeout(()=>{scene.classList.remove('thundering');shell.classList.remove('storming');thunderBusy=false},900)
+  }
+  function startStormClock(){
+    clearInterval(stormTimer);
+    stormTimer=setInterval(()=>{
+      if(shell.classList.contains('is-done')||busy)return;
+      inactivity++;
+      if(inactivity%2===0)addCloud();
+      if(inactivity>=5){triggerThunder();inactivity=0}
+    },1000)
+  }
+  function blow(preferredTarget){
+    if(busy||cleared>=total())return;
+    inactivity=0;
+    busy=true;gusts++;
+    fan.classList.add('spinning');scene.classList.remove('blowing');void scene.offsetWidth;scene.classList.add('blowing');
+    clearTimeout(fanTimer);fanTimer=setTimeout(()=>fan.classList.remove('spinning'),900);
+    const available=clouds.filter(c=>!c.classList.contains('gone')&&!c.classList.contains('flying'));
+    const target=preferredTarget&&available.includes(preferredTarget)?preferredTarget:available[Math.floor(Math.random()*available.length)];
+    const s=scene.getBoundingClientRect(),r=target.getBoundingClientRect();
+    playWhoosh(target,s);
+    const cx=s.left+s.width/2,cy=s.top+s.height*.59,tx=r.left+r.width/2,ty=r.top+r.height/2;
+    let dx=tx-cx,dy=ty-cy;const length=Math.max(1,Math.hypot(dx,dy));
+    dx=dx/length*(Math.max(s.width,s.height)*1.15);dy=dy/length*(Math.max(s.width,s.height)*1.15);
+    target.style.setProperty('--dx',dx+'px');target.style.setProperty('--dy',dy+'px');target.style.setProperty('--rot',(Math.random()*32-16)+'deg');
+    target.classList.add('flying');
+    const before=cleared;cleared++;update();
+    scheduleSound(playPop,630);
+    const note=notes[Math.min(before,notes.length-1)];setMessage(note[0],note[1],cleared===total()?'🌈':'🍃');
+    status.innerHTML='一阵风吹走了一朵乌云';
+    actionTimer=setTimeout(()=>{actionTimer=0;target.classList.remove('flying');target.classList.add('gone');busy=false;if(allClear()){cleared=total();update();scene.classList.add('all-clear');shell.classList.add('is-done');status.textContent='晴天来啦';setMessage('辛苦啦，今天也做得很好','现在的你，值得一片明亮的天空。','🌈');playSunshine();if(window.parent!==window)window.parent.postMessage({type:'emotion-forest-game-complete',game:'fan'},'*')}else update()},840);
+  }
+  function restart(){
+    cleared=0;gusts=0;busy=false;inactivity=0;thunderBusy=false;spawnIndex=0;clearTimeout(fanTimer);clearTimeout(actionTimer);actionTimer=0;soundTimers.forEach(clearTimeout);soundTimers=[];fan.classList.remove('spinning');scene.classList.remove('blowing','all-clear','thundering');shell.classList.remove('is-done','storming');
+    clouds.slice(initialCloudTotal).forEach(c=>c.remove());clouds=clouds.slice(0,initialCloudTotal);
+    clouds.forEach(c=>{c.classList.remove('gone','flying');c.style.removeProperty('--dx');c.style.removeProperty('--dy');c.style.removeProperty('--rot')});
+    status.innerHTML='小风扇准备好了，<strong>点一点</strong>试试';setMessage('来一阵轻轻的风','不需要一下子解决所有事，先让心里的天空透一点光。');update();startStormClock();
+  }
+  fan.addEventListener('click',blow);document.getElementById('blowButton').addEventListener('click',blow);
+  const soundToggle=document.getElementById('soundToggle');
+  soundToggle.addEventListener('click',()=>{soundOn=!soundOn;soundToggle.textContent=soundOn?'♫ 音效开':'♫ 音效关';soundToggle.setAttribute('aria-pressed',String(soundOn));soundToggle.setAttribute('aria-label',soundOn?'关闭音效':'开启音效')});
+  clouds.forEach(bindCloud);
+  document.getElementById('restartTop').addEventListener('click',restart);
+  document.addEventListener('keydown',e=>{if(e.code==='Space'&&!['BUTTON'].includes(document.activeElement?.tagName)&&!e.repeat){e.preventDefault();blow()}});
+  update();startStormClock();
+})();
+</script>
+</body>
+</html>

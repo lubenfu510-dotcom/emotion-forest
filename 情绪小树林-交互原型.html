@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f5efe2">
+<title>情绪小树林 · 小程序交互原型</title>
+<style>
+:root{--paper:#f7f1e5;--paper2:#fffaf0;--ink:#30463a;--muted:#748277;--line:#d9d3c4;--sky:#b9dced;--sky2:#e3f1f6;--leaf:#a8c99a;--leaf2:#dcebd6;--pink:#f1c9ce;--pink2:#f8e5e5;--yellow:#f1d47d;--yellow2:#fbf0cb;--brown:#9b755b;--white:#fffdf8;--shadow:0 18px 55px #6a58301c}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#ede6d8;color:var(--ink);font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif}
+body{min-height:100vh;background-image:radial-gradient(ellipse at 20% 9%,#fff9ee 0,transparent 35%),radial-gradient(ellipse at 88% 84%,#dce9d2 0,transparent 27%),url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E")}
+button,input,textarea{font:inherit}button{color:inherit}
+.board{width:min(1360px,100%);min-height:100vh;margin:auto;padding:30px 42px 36px;position:relative}
+.board:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.17;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)' opacity='.2'/%3E%3C/svg%3E");mix-blend-mode:multiply}
+.brandbar{display:flex;justify-content:space-between;align-items:center;gap:20px;position:relative;z-index:1;margin:0 auto 25px;max-width:1240px}
+.brandlock{display:flex;align-items:center;gap:12px}.brandlock svg{width:44px;height:48px}
+.brandname{font:700 24px/1.1 "STKaiti","KaiTi","Songti SC",serif;letter-spacing:.05em}.brandnote{font-size:11px;color:#879084;letter-spacing:.08em;margin-top:5px}
+.topnote{font:13px "STKaiti","KaiTi",serif;color:#788779;transform:rotate(-2deg);padding:8px 14px;border-bottom:1px dashed #9dba94}
+.stage{max-width:1240px;margin:auto;display:grid;grid-template-columns:minmax(220px,1fr) 420px minmax(220px,1fr);gap:36px;align-items:center;position:relative;z-index:1}
+.story,.guide{align-self:stretch;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.story{padding:15px 5px 25px 0}.guide{padding:15px 0 25px 4px}
+.chapter{font:600 13px/1.3 "PingFang SC",sans-serif;letter-spacing:.12em;color:#7e9b79;display:flex;align-items:center;gap:9px}.chapter:before{content:"";display:inline-block;width:23px;border-top:1px solid currentColor}
+.story h1{font:700 clamp(38px,4.5vw,60px)/1.15 "STKaiti","KaiTi","Songti SC",serif;letter-spacing:.02em;margin:20px 0 17px;color:#283d33}
+.story h1 em{font-style:normal;color:#68926d}.story p{font:16px/1.9 "STKaiti","KaiTi","Songti SC",serif;color:#66766c;margin:0 0 26px;max-width:330px}
+.paper-note{position:relative;max-width:310px;padding:17px 19px;background:#fffaf0d9;border:1px solid #e7ddc6;border-radius:5px 16px 4px 15px;box-shadow:2px 6px 0 #dacfba55;transform:rotate(-1.1deg);font:13px/1.8 "STKaiti","KaiTi",serif;color:#7a715f}
+.paper-note:after{content:"";position:absolute;left:24px;bottom:-9px;width:52px;border-bottom:1px solid #d3c9b6;transform:rotate(4deg)}
+.flow-list{display:grid;gap:11px;margin-top:28px}.flow-item{display:flex;align-items:center;gap:12px;font-size:12px;color:#819084}
+.flow-num{width:25px;height:25px;border:1px solid #bdd0b6;color:#6a8b6e;background:#f5f6e9;border-radius:50%;display:grid;place-items:center;font:11px Georgia}
+.flow-item.active{color:#3d5945;font-weight:650}.flow-item.active .flow-num{background:#b5d1a8;color:#365342;border-color:#a4c398;box-shadow:0 0 0 4px #dcebd6}
+.guide-title{font:700 21px "STKaiti","KaiTi","Songti SC",serif;margin:0 0 5px}.guide-copy{font-size:12px;line-height:1.8;color:#7d887e;margin:0 0 17px}
+.chapter-nav{display:flex;flex-wrap:wrap;gap:7px}.chapter-nav button{border:1px solid #d7d6c4;background:#fffaf0b8;border-radius:99px;padding:7px 10px;font-size:11px;color:#66776a;cursor:pointer;transition:.2s}
+.chapter-nav button:hover{background:#dcebd6;border-color:#aecba4;transform:translateY(-1px)}
+.tip-card{margin-top:25px;border-top:1px dashed #c9cdbb;padding-top:17px;font:13px/1.8 "STKaiti","KaiTi",serif;color:#758374}
+.tip-card strong{display:block;color:#526e57;font-size:15px;margin-bottom:5px;font-weight:700}
+.phone{height:min(830px,calc(100vh - 124px));min-height:700px;width:420px;max-width:100%;margin:0 auto;padding:10px;border:1px solid #c7c2b5;border-radius:39px;background:#faf6ec;box-shadow:0 25px 65px #61553b24,0 0 0 5px #fff9edb8;position:relative}
+.phone:before{content:"";position:absolute;top:5px;left:50%;transform:translateX(-50%);height:5px;width:54px;border-radius:5px;background:#d8d1c4;z-index:3}
+.app{height:100%;overflow:hidden;border-radius:30px;background:var(--paper);position:relative;display:grid;grid-template-rows:32px minmax(0,1fr) 69px;isolation:isolate}
+.app.safety-mode{grid-template-rows:32px minmax(0,1fr) 0}
+.app:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.19;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 130 130' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.76' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)' opacity='.23'/%3E%3C/svg%3E")}
+.status{display:flex;justify-content:space-between;align-items:center;padding:7px 21px 0;font:600 11px Arial,sans-serif;color:#385143}
+.status-icons{display:flex;gap:5px;align-items:center}.signal{font-size:11px;letter-spacing:-2px}.battery{height:9px;width:17px;border:1.2px solid currentColor;border-radius:2px;position:relative}.battery:before{content:"";position:absolute;left:2px;top:2px;width:9px;height:3px;border-radius:1px;background:currentColor}.battery:after{content:"";position:absolute;right:-3px;top:2px;height:3px;width:2px;background:currentColor;border-radius:0 2px 2px 0}
+.screen{overflow:auto;overscroll-behavior:contain;padding:16px 19px 22px;scrollbar-width:thin;scrollbar-color:#cad6c3 transparent}
+.screen::-webkit-scrollbar{width:3px}.screen::-webkit-scrollbar-thumb{background:#cad6c3;border-radius:5px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);align-items:center;border-top:1px solid #ded8ca;background:#fffdf8e8;padding:6px 7px max(6px,env(safe-area-inset-bottom))}
+.tab{border:0;background:transparent;border-radius:18px;min-height:51px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#859087;font-size:10px;cursor:pointer}
+.tab svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tab.active{background:#dcebd6;color:#42664d;font-weight:700}.tab.active[data-target="release"]{background:#fae9bc;color:#715e31}.tab.active[data-target="partner"]{background:#dceef4;color:#3e6976}
+.pagehead{display:flex;align-items:flex-start;justify-content:space-between;gap:9px;margin-bottom:13px}
+.pagehead h2{font:700 27px/1.25 "STKaiti","KaiTi","Songti SC",serif;letter-spacing:.02em;margin:0 0 3px;color:#30463a}
+.eyeline{font-size:11px;letter-spacing:.1em;color:#8a9a8a}.head-link{border:1px solid #d4dece;background:#e8f0e1;color:#557354;border-radius:99px;padding:8px 10px;font-size:10px;white-space:nowrap;cursor:pointer}
+.head-link.gold{background:#f9edc4;border-color:#ecdda0;color:#7b6935}.head-link.blue{background:#e6f1f5;border-color:#c9e1e8;color:#527782}
+.serif{font-family:"STKaiti","KaiTi","Songti SC",serif}
+.muted{color:#7d897d}.small{font-size:11px;line-height:1.7}.caption{font:13px/1.7 "STKaiti","KaiTi","Songti SC",serif;color:#718172}
+.card{background:#fffdf7c9;border:1px solid #e5dece;border-radius:20px;padding:14px;box-shadow:0 4px 12px #84754a0b}
+.soft-card{border:0;background:#e7efe2;border-radius:20px;padding:14px}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:99px;padding:6px 10px;background:#edf2e6;color:#627d5e;font-size:10px}
+.primary,.secondary,.quiet,.danger{border:0;border-radius:99px;padding:13px 17px;cursor:pointer;transition:.18s}
+.primary{background:#365744;color:#fffaf0;box-shadow:0 4px 0 #294638;font-weight:700}
+.primary:hover{transform:translateY(-1px);box-shadow:0 5px 0 #294638}
+.secondary{background:#b8d3aa;color:#39513d;font-weight:700}
+.quiet{background:#fffaf0;border:1px solid #dcd5c8;color:#69796b}
+.danger{background:#f7e0dd;color:#935f59}
+.full{width:100%}
+.text-button{background:none;border:0;padding:7px;color:#78917a;font-size:11px;text-decoration:underline;text-decoration-style:dotted;cursor:pointer}
+.divider{height:1px;background:#e6e0d4;margin:14px 0}
+.row{display:flex;align-items:center;gap:8px}.between{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.hero-scene{height:262px;border-radius:22px;position:relative;overflow:hidden;background:linear-gradient(#e6f2f5,#f7f2e4 78%);border:1px solid #e0dfd1;margin:6px 0 13px}
+.hero-scene:after{content:"";position:absolute;inset:0;opacity:.25;pointer-events:none;background-image:radial-gradient(#fff 1px,transparent 1.5px);background-size:11px 11px;mix-blend-mode:soft-light}
+.cloud{position:absolute;width:69px;height:24px;background:#fffdf7;border-radius:30px;opacity:.8}.cloud:before,.cloud:after{content:"";position:absolute;bottom:4px;background:inherit;border-radius:50%}.cloud:before{width:31px;height:31px;left:12px}.cloud:after{width:25px;height:25px;left:34px}.cloud.one{left:18px;top:44px}.cloud.two{right:18px;top:27px;transform:scale(.72);background:#c7e3ed}
+.sun{position:absolute;width:32px;height:32px;right:48px;top:57px;border-radius:50%;background:#f4d477;box-shadow:0 0 0 8px #f4d4772d}
+.home-tree{position:absolute;width:100%;height:205px;left:0;bottom:0}
+.scene-note{position:absolute;left:15px;top:98px;width:98px;font:12px/1.5 "STKaiti","KaiTi",serif;color:#76866d;transform:rotate(-6deg);z-index:1}
+.home-copy{text-align:center;margin:0 4px 14px}.home-copy h2{font:700 25px/1.4 "STKaiti","KaiTi","Songti SC",serif;margin:8px 0 4px}.home-copy p{font:12px/1.8 "STKaiti","KaiTi",serif;color:#778377;margin:0}
+.cta-wrap{margin-top:14px}
+.beneath{text-align:center;color:#81937f;font:12px/1.7 "STKaiti","KaiTi",serif;margin-top:12px}
+.tree-art{display:block;width:100%;height:auto}
+.tree-state{background:linear-gradient(#e1edf0 0 52%,#dcebd6 52%);border-radius:21px;overflow:hidden;position:relative;padding:8px 7px 0}
+.tree-state svg{width:100%;height:180px;display:block}
+.tree-state .state-tag{position:absolute;left:12px;bottom:11px;background:#fffaf0df;border-radius:99px;padding:7px 10px;font-size:10px;color:#5f785f}
+.result-intro{font:14px/1.8 "STKaiti","KaiTi",serif;text-align:center;color:#607466;margin:12px 0}
+.mood-tags{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin:9px 0}
+.choice-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}.choice-card{border:1px solid #e4ddcf;background:#fffaf0;border-radius:16px;padding:12px 9px;text-align:center;cursor:pointer}.choice-card strong{display:block;font:700 16px "STKaiti","KaiTi",serif;margin:4px}.choice-card span{font-size:10px;color:#829084}
+.inline-icon{font-size:19px}
+.inputbox,.textarea{width:100%;background:#fffdf8;border:1px solid #d9d6ca;border-radius:16px;padding:12px 13px;color:#405545;outline:none}
+.inputbox:focus,.textarea:focus{border-color:#9ebc97;box-shadow:0 0 0 3px #dcebd6}
+.textarea{resize:vertical;min-height:142px;line-height:1.8;font-size:13px}.textarea::placeholder,.inputbox::placeholder{color:#a3aa9f}
+.chiprow{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}
+.chip{border:1px solid #dddaca;border-radius:99px;background:#fffaf0;padding:7px 10px;font-size:10px;color:#758171;cursor:pointer}
+.locked{opacity:.55;cursor:default}
+.analyze{min-height:490px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.fireflies{font-size:22px;letter-spacing:14px;color:#e2bd62;animation:twinkle 1.5s ease-in-out infinite alternate}
+@keyframes twinkle{to{opacity:.5;transform:translateY(-3px)}}
+.loader{width:140px;height:140px;margin:25px auto;background:#e3eedb;border-radius:53% 47% 55% 45%;display:grid;place-items:center;animation:breathe 2.2s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.05)}}
+.loader svg{width:115px}
+.method-area{position:relative;margin:15px 0 6px}
+.method-card{min-height:362px;border-radius:28px;padding:19px 17px;text-align:center;position:relative;overflow:hidden;border:1px solid #e5dece;background:var(--yellow2)}
+.method-card.pink{background:var(--pink2)}.method-card.sky{background:var(--sky2)}.method-card.green{background:var(--leaf2)}
+.method-card h3{font:700 23px "STKaiti","KaiTi",serif;margin:9px 0 3px}.method-card p{font-size:11px;line-height:1.7;color:#728076;margin:7px auto;max-width:235px}
+.method-art{height:144px;margin:4px auto 2px;display:grid;place-items:center}.method-art svg{width:174px;height:140px}
+.arrow-button{position:absolute;top:145px;width:32px;height:32px;border:1px solid #ddd5c5;background:#fffdf3;border-radius:50%;font-size:18px;cursor:pointer;z-index:1;box-shadow:0 2px 0 #ded6c6}
+.arrow-button.left{left:-8px}.arrow-button.right{right:-8px}
+.dots{display:flex;justify-content:center;gap:7px;margin:13px}.dots button{width:7px;height:7px;border:0;border-radius:50%;padding:0;background:#d8d6c8;cursor:pointer}.dots button.active{width:19px;border-radius:9px;background:#87aa7d}
+.method-meta{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.method-cta{margin-top:12px}
+.play-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.play-title{font:700 25px "STKaiti","KaiTi",serif;margin:0}.play-step{font-size:10px;color:#8a968a}
+.play-scene{min-height:204px;border-radius:22px;background:linear-gradient(#e7f2f4,#f7f1e4);border:1px solid #e0dfd1;display:grid;place-items:center;margin:13px 0;position:relative;overflow:hidden}
+.play-scene .smalltree{width:225px;height:185px}
+.movement{display:flex;gap:8px;overflow:auto;padding:3px 0 8px}.movement button{flex:0 0 auto;border:1px solid #dcd9ca;background:#fffaf0;border-radius:13px;padding:9px;font-size:10px;color:#738172}
+.movement button.active{background:#e1edda;border-color:#aeca9f;color:#4e6b50}
+.ice{width:154px;height:152px;background:linear-gradient(135deg,#fffefa99,#9fd3e0a8);border:2px solid #b9d8dd;border-radius:25px 21px 28px 23px;box-shadow:inset 0 0 18px #fff,0 12px 25px #74a6b223;display:grid;place-items:center;position:relative;transform:rotate(-3deg)}
+.ice:before,.ice:after{content:"";position:absolute;width:47px;height:31px;border-top:1px dashed #fff;transform:rotate(24deg);top:29px;left:13px}.ice:after{top:auto;bottom:28px;left:auto;right:15px;transform:rotate(-40deg)}
+.ice-etch{font:13px/1.5 "STKaiti","KaiTi",serif;color:#627d80;max-width:112px;text-align:center;word-break:break-all}
+.warm-progress{display:flex;gap:5px;justify-content:center;margin:10px}.warm-progress i{width:20px;height:5px;background:#e7e2d7;border-radius:5px}.warm-progress i.on{background:#eabf65}
+.breath-cloud{width:124px;height:58px;background:#c5e4ed;border-radius:40px;position:relative;transition:transform .35s,opacity .35s}.breath-cloud:before,.breath-cloud:after{content:"";position:absolute;background:inherit;border-radius:50%;bottom:12px}.breath-cloud:before{width:67px;height:67px;left:18px}.breath-cloud:after{width:53px;height:53px;right:8px}
+.breath-count{position:absolute;bottom:13px;font-size:11px;color:#728276}
+.soundwaves{width:170px;height:160px;display:grid;place-items:center;position:relative;color:#80aa82}
+.soundwaves:before,.soundwaves:after{content:"";position:absolute;inset:18px;border:1px solid #a8c99a;border-radius:50%;animation:wave 2s infinite}.soundwaves:after{inset:0;animation-delay:.6s}
+@keyframes wave{to{transform:scale(1.2);opacity:0}}
+.soundwaves span{font-size:33px;z-index:1}
+.sound-option{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:12px 0}.sound-option button{border:1px solid #dedbcd;background:#fffaf0;border-radius:12px;padding:9px;font-size:10px}.sound-option button.active{background:#e2efdd;border-color:#a6c69a}
+.duration{display:flex;gap:7px;margin:10px 0}.duration button{flex:1;border:1px solid #ddd9ca;background:#fffaf0;border-radius:10px;padding:8px;font-size:10px}.duration button.active{background:#f7e8bc;border-color:#e6d17e}
+.chat-scene{height:177px;position:relative;overflow:hidden;border-radius:21px;background:linear-gradient(#e6f2f5,#dcebd6 86%);margin-bottom:13px}
+.chat-scene svg{width:100%;height:100%}
+.chat-caption{position:absolute;top:12px;left:12px;right:12px;text-align:center;font:16px "STKaiti","KaiTi",serif;color:#48644f}
+.chatlog{display:grid;gap:9px;margin:10px 0 13px}
+.bubble-msg{max-width:88%;padding:10px 12px;border-radius:15px;font-size:11px;line-height:1.7}
+.bubble-msg.ai{justify-self:start;background:#fffdf8;border:1px solid #e9e2d5;border-top-left-radius:5px;color:#58695d}
+.bubble-msg.user{justify-self:end;background:#d9edf2;border:1px solid #cee1e5;border-bottom-right-radius:5px;color:#476975}
+.quick-asks{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.quick-asks button{border:1px solid #d8ddcf;background:#f5f3e8;border-radius:99px;padding:7px 9px;font-size:10px;color:#6b7b6b}
+.chat-compose{display:flex;gap:7px}.chat-compose input{flex:1;min-width:0;border-radius:99px;padding:11px 13px;font-size:11px}.chat-compose button{width:42px;height:42px;padding:0}
+.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:11px 0}
+.metric{background:#f9e9b9;border-radius:17px;padding:11px 7px;text-align:center}.metric:nth-child(2){background:#d9ebf1}.metric:nth-child(3){background:#f2d7d8}
+.metric strong{display:block;font:700 19px "STKaiti","KaiTi",serif}.metric span{display:block;font-size:9px;line-height:1.5;color:#718073;margin-top:4px}
+.record-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px dashed #e4dfd4;font-size:11px}.record-row:last-child{border:0}
+.record-row button{border:0;background:transparent;color:#849487;font-size:11px;cursor:pointer}
+.week-bars{height:87px;display:flex;align-items:end;justify-content:space-around;padding:7px 0}.week-bars span{width:17px;border-radius:9px 9px 3px 3px;background:#a8c99a;position:relative}.week-bars span:after{content:attr(data-day);position:absolute;top:calc(100% + 5px);left:50%;transform:translateX(-50%);font-size:8px;color:#899487}
+.record-card{margin-top:11px}.record-line{display:flex;justify-content:space-between;gap:6px;padding:8px 0;border-bottom:1px solid #ece6da;font-size:10px}.record-line:last-child{border:0}
+.memory{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;padding:11px 0;border-bottom:1px dashed #ddd9cc;font-size:11px;line-height:1.7}.memory small{display:block;color:#849084;font-size:9px}.memory button{border:0;background:transparent;color:#9e817b;font-size:10px;cursor:pointer}.memory.deleted{opacity:.4;text-decoration:line-through}
+.toggle{width:37px;height:21px;border:0;border-radius:20px;background:#d9d7cc;padding:3px;cursor:pointer}.toggle:before{content:"";display:block;width:15px;height:15px;border-radius:50%;background:#fff;transition:transform .2s}.toggle.on{background:#a8c99a}.toggle.on:before{transform:translateX(16px)}
+.summary-check{display:flex;gap:9px;align-items:flex-start;padding:12px;border:1px solid #e1dbcf;background:#fffdf8;border-radius:14px;margin:8px 0;font-size:11px;line-height:1.65;cursor:pointer}
+.summary-check input{accent-color:#789b72;margin-top:3px}
+.modal{position:absolute;inset:0;background:#27352d78;z-index:9;display:grid;place-items:center;padding:24px;backdrop-filter:blur(2px)}
+.modal[hidden]{display:none}.modal-card{max-width:300px;background:#fffaf0;border:1px solid #e2d8c6;border-radius:22px;padding:22px 19px;text-align:center;box-shadow:0 18px 40px #1e322344}
+.modal-card h3{font:700 21px "STKaiti","KaiTi",serif;margin:2px 0 8px}.modal-card p{font-size:11px;line-height:1.7;color:#768176}
+.modal-actions{display:grid;gap:8px}.modal-actions button{padding:10px;font-size:11px}
+.toast{position:absolute;bottom:78px;left:50%;transform:translate(-50%,15px);padding:9px 14px;background:#365744;color:#fffaf0;border-radius:99px;font-size:11px;opacity:0;pointer-events:none;transition:.25s;z-index:8;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.end{text-align:center;padding:15px 3px}.end .tree-state{margin:8px 0 12px}.end h2{font:700 24px "STKaiti","KaiTi",serif}.end p{font:13px/1.8 "STKaiti","KaiTi",serif;color:#738174}
+.year-ring{width:165px;height:165px;margin:14px auto;border-radius:50%;border:1px solid #bcaa7c;box-shadow:inset 0 0 0 7px #e7dcbb,inset 0 0 0 9px #b9c89d,inset 0 0 0 18px #fff9e9,inset 0 0 0 21px #d7b8a7;display:grid;place-items:center;text-align:center;background:#f4edda}
+.year-ring strong{font:700 17px "STKaiti","KaiTi",serif}.year-ring span{display:block;font-size:9px;color:#788273;margin-top:4px}
+.small-note{font-size:9px;color:#949c8f;line-height:1.6}
+@media(max-width:1050px){.board{padding:22px}.stage{grid-template-columns:minmax(0,1fr) 420px;gap:24px}.guide{display:none}.story h1{font-size:44px}}
+@media(max-width:700px){html,body{height:100%;overflow:hidden;background:var(--paper)}.board{padding:0;height:100dvh;min-height:0}.board:before,.brandbar,.story,.guide,.phone:before{display:none}.stage{display:block;height:100%;max-width:none}.phone{height:100dvh;min-height:0;width:100%;padding:0;border:0;border-radius:0;box-shadow:none}.app{border-radius:0;grid-template-rows:35px minmax(0,1fr) calc(67px + env(safe-area-inset-bottom))}.screen{padding:15px 18px 22px}.tabs{padding-bottom:max(7px,env(safe-area-inset-bottom))}.hero-scene{height:250px}}
+</style>
+</head>
+<body>
+<div class="board">
+  <header class="brandbar">
+    <div class="brandlock">
+      <svg viewBox="0 0 50 54" fill="none" aria-hidden="true"><path d="M24 48V23" stroke="#765e43" stroke-width="3" stroke-linecap="round"/><path d="M24 34 15 27m9 11 8-8" stroke="#765e43" stroke-width="2.4" stroke-linecap="round"/><path d="M23 25c-10 1-15-4-12-11 2-5 8-7 12-4 0-7 5-10 10-8 6 3 6 9 2 12 7 0 10 7 6 11-4 5-12 3-15 0Z" fill="#91b889" stroke="#6f9b70" stroke-width="1.3" stroke-linejoin="round"/><path d="M24 50h12" stroke="#a6c89b" stroke-width="2" stroke-linecap="round"/></svg>
+      <div><div class="brandname">情绪小树林</div><div class="brandnote">把今天的烦心事，轻轻放下来</div></div>
+    </div>
+    <div class="topnote">“先说出来，再慢慢想清楚。”</div>
+  </header>
+  <main class="stage">
+    <aside class="story">
+      <div class="chapter">DIGITAL PICTURE BOOK · 01</div>
+      <h1>给情绪一棵<br><em>会长大的树。</em></h1>
+      <p>这里不急着给答案。你可以先把心里的话放下来，再选一种此刻用得上的照顾方式。</p>
+      <div class="paper-note">今天不用立刻变好。<br>我们从一个小小的动作开始，<br>让心里多一点点空间。</div>
+      <div class="flow-list" id="flowList">
+        <div class="flow-item" data-flow="home"><span class="flow-num">1</span>想聊聊 · 把话说出来</div>
+        <div class="flow-item" data-flow="release"><span class="flow-num">2</span>要宣泄 · 找个小出口</div>
+        <div class="flow-item" data-flow="partner"><span class="flow-num">3</span>想清楚 · 一起理一理</div>
+        <div class="flow-item" data-flow="tree"><span class="flow-num">4</span>我的情绪树 · 留下成长</div>
+      </div>
+    </aside>
+    <section class="phone" aria-label="情绪小树林小程序原型">
+      <div class="app">
+        <div class="status"><span>9:41</span><span class="status-icons"><span class="signal">▂▄▆</span><span>⌁</span><span class="battery"></span></span></div>
+        <div class="screen" id="screen" aria-live="polite"></div>
+        <nav class="tabs" id="tabs" aria-label="主导航"></nav>
+        <div class="modal" id="guard" hidden>
+          <div class="modal-card">
+            <div class="fireflies">✦　✧</div>
+            <h3>这次体验还没有结束</h3>
+            <p>要先保存进度，再去别的地方看看吗？</p>
+            <div class="modal-actions">
+              <button class="primary" data-act="guardContinue">继续当前体验</button>
+              <button class="quiet" data-act="guardSave">保存并离开</button>
+              <button class="text-button" data-act="guardDiscard">不保存，直接离开</button>
+            </div>
+          </div>
+        </div>
+        <div class="toast" id="toast"></div>
+      </div>
+    </section>
+    <aside class="guide">
+      <div class="chapter">STORY MAP</div>
+      <h2 class="guide-title">沿着小路慢慢走</h2>
+      <p class="guide-copy">每个页面都可以点一点。试试开始倾诉，看看情绪树，再选一种温柔的方式陪自己。</p>
+      <div class="chapter-nav">
+        <button data-act="go" data-target="home">首页</button>
+        <button data-act="go" data-target="vent">开始倾诉</button>
+        <button data-act="go" data-target="release">宣泄方式</button>
+        <button data-act="go" data-target="tree">我的情绪树</button>
+        <button data-act="go" data-target="archive">我的档案</button>
+      </div>
+      <div class="tip-card"><strong>这一版原型包含</strong>倾诉与情绪识别、五种宣泄体验、情绪搭子、当前状态、疗愈记录、年轮与档案管理。</div>
+      <div class="tip-card"><strong>画面小约定</strong>树会有起伏，但不会用“好坏”评价你。完成一次照顾，就已经很了不起。</div>
+    </aside>
+  </main>
+</div>
+<script>
+(function(){
+"use strict";
+var state={
+  page:"home",ventText:"",iceText:"",method:0,severity:1,iceHeat:0,breaths:0,move:0,soundOn:false,selectedSound:["雨声"],duration:5,screamMode:"轻声喊一句话",
+  messages:[{who:"ai",text:"我陪你把这件事理一理。刚才这件事，最让你难受的是哪一部分？"}],
+  memories:[
+    {title:"最近的工作节奏让我有些疲惫",meta:"来自一次倾诉 · 需要你确认后保存",deleted:false},
+    {title:"我更喜欢先被倾听，再一起想办法",meta:"沟通偏好 · 你可以随时修改",deleted:false},
+    {title:"最近常提到：工作安排与休息",meta:"反复出现的主题 · 仅供自己查看",deleted:false}
+  ],
+  saveChoice:[false,false,false],memoryEnabled:true,yearOpen:false,recordsOpen:false,guardTarget:"",toastTimer:null,
+  audioContext:null,audioNodes:[],audioTimer:null,remaining:0
+};
+var methods=[
+  {name:"消气操",hint:"动一动，把身体里的紧绷慢慢松开",emotion:"生气 · 憋屈 · 身体紧绷",desc:"跟着做几个轻轻的甩手和伸展。不用标准，舒服就好。",color:"yellow",icon:"stretch",button:"开始动一动"},
+  {name:"烦恼冰块",hint:"把脑内反复响的那句话，先放进冰块里",emotion:"烦恼反复 · 脑内很吵",desc:"写下一句烦恼，用暖暖的火光陪冰块慢慢融化。",color:"sky",icon:"ice",button:"拿起小火把"},
+  {name:"吹走不开心",hint:"跟着云朵吸一口气，再轻轻把它吹远",emotion:"焦虑 · 紧张 · 闷闷的",desc:"按住按钮给云朵一点点风。不用很用力，轻轻就好。",color:"pink",icon:"breeze",button:"轻轻吹一口气"},
+  {name:"放声大叫",hint:"让声音出去一点，心里就多一点空间",emotion:"压抑 · 憋闷 · 想释放",desc:"可以轻声喊、笑一笑，也可以只听白噪音。原型不会录音。",color:"green",icon:"sound",button:"让声音出去一点"},
+  {name:"白噪音",hint:"雨声、风声和森林声，安静地陪你一会儿",emotion:"疲惫 · 烦躁 · 想安静",desc:"选一种声音和时长。你不需要完成任务，只要待一会儿。",color:"sky",icon:"rain",button:"开始安静一会儿"}
+];
+function esc(s){return String(s||"").replace(/[&<>"']/g,function(c){return({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]})}
+function treeSvg(kind){
+ var leaves=kind==="withered"?"<path d='M126 91c-28-1-39-21-28-38 7-11 21-12 31-5 0-15 11-23 22-19 12 4 14 17 8 25 15-2 24 9 20 20-4 11-18 16-31 9-5 9-13 12-22 8Z' fill='#c6bd8b' stroke='#9e926e' stroke-width='2'/>"+
+ "<path d='M180 78c-16-10-12-28 2-34 8-4 17 0 21 7 4-11 17-12 23-5 7 8 3 18-5 22 10 6 9 18 0 23-9 5-21-1-24-12-7 4-13 3-17-1Z' fill='#d3c781' stroke='#a59b6e' stroke-width='2'/>"+
+ "<path d='M225 113c-14-7-13-22-1-28 8-4 16 0 20 6 4-10 17-10 21-2 5 8 1 17-8 20 9 6 8 17-1 21-10 4-20-2-21-12-5 2-8 0-10-5Z' fill='#d8c4a0' stroke='#aa9574' stroke-width='2'/>":
+ "<path d='M111 98c-28 2-42-19-31-39 7-13 23-15 35-7-1-19 13-31 28-25 14 5 18 21 9 32 19-5 33 8 28 23-4 14-23 20-39 12-8 10-20 12-30 4Z' fill='#80b18c' stroke='#638c6d' stroke-width='2.3'/>"+
+ "<path d='M173 70c-18-11-13-32 4-39 10-4 20 0 24 8 5-14 20-16 28-7 8 9 4 21-6 27 13 7 12 21 1 27-11 6-25-1-28-14-8 4-17 3-23-2Z' fill='#f1d477' stroke='#d0ae56' stroke-width='2.3'/>"+
+ "<path d='M224 118c-18-8-17-28-2-36 9-5 20-2 25 6 5-13 21-14 27-4 7 10 2 21-9 25 11 7 10 21-1 26-12 5-25-2-26-15-6 3-11 2-14-2Z' fill='#98bf8c' stroke='#6f9e73' stroke-width='2.3'/>"+
+ "<path d='M146 76c-11-10-6-23 5-26 7-2 13 3 14 9 3-8 13-9 17-3 5 7 1 13-5 16 7 4 6 12-1 15-7 3-15-2-15-10-6 2-11 1-15-1Z' fill='#90bdd0' stroke='#6e9eae' stroke-width='2'/>";
+ if(kind==="light")leaves="<path d='M111 98c-28 2-42-19-31-39 7-13 23-15 35-7-1-19 13-31 28-25 14 5 18 21 9 32 19-5 33 8 28 23-4 14-23 20-39 12-8 10-20 12-30 4Z' fill='#91b991' stroke='#6f9a75' stroke-width='2.3'/>"+"<path d='M177 71c-15-10-11-28 4-34 9-4 17 0 21 7 5-12 18-13 24-5 7 8 3 19-6 23 11 7 10 19 0 24-10 5-21-1-24-12-7 3-14 2-19-3Z' fill='#ead686' stroke='#c9b96c' stroke-width='2'/>"+"<path d='M224 118c-14-7-13-22-1-28 8-4 16 0 20 6 4-10 17-10 21-2 5 8 1 17-8 20 9 6 8 17-1 21-10 4-20-2-21-12-5 2-8 0-10-5Z' fill='#a8c995' stroke='#7fa77c' stroke-width='2'/>";
+ if(kind==="severe")leaves="<path d='M122 92c-21-7-24-24-9-34 8-5 17-3 22 4 3-12 15-15 22-7 7 8 4 18-5 23 7 8 2 18-7 20-9 1-17-2-23-6Z' fill='#c7bd93' stroke='#a69b7b' stroke-width='2'/>"+"<path d='M204 75c-13-10-9-23 3-27 7-2 13 1 16 7 4-9 14-10 19-4 5 7 2 15-5 18 8 5 6 14-2 17-8 3-16-1-18-9-5 2-9 1-13-2Z' fill='#d1c69a' stroke='#aa9c7b' stroke-width='2'/>"+"<path d='M253 125c-9-7-7-17 2-20 6-2 11 1 13 5 3-7 11-7 14-2 4 5 1 11-4 14 6 3 5 10-1 12-6 2-12-1-13-7-4 1-7 0-11-2Z' fill='#cec39a' stroke='#aa9c7b' stroke-width='2'/>";
+ var trunk=kind==="severe"?"<path d='M181 197c-2-39 1-76 1-112m1 56-32-30m33 14 32-30m-34 59-25-1m27-22 24 5' stroke='#927e69' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/>":kind==="withered"?"<path d='M181 197c-2-39 1-76 1-112m1 56-32-30m33 14 32-30m-34 59-25-1m27-22 24 5' stroke='#856a50' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/>":"<path d='M181 197c-2-39 1-76 1-112m1 56-32-30m33 14 32-30m-34 59-25-1m27-22 24 5' stroke='#765d45' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/>";
+ return "<svg viewBox='0 0 360 225' class='tree-art' role='img' aria-label='"+(kind==="withered"?"正在恢复的树":"一棵圆头小树")+"'><path d='M0 188c47-21 74-2 118-12 51-12 74 12 116 3 46-10 77 0 126 13v33H0Z' fill='#b6d2a7' stroke='#99bd8f' stroke-width='2' stroke-linejoin='round'/>"+
+ "<path d='M0 199c42-15 83 11 131-2 45-12 77 12 118 1 44-12 75 0 111 7' fill='none' stroke='#d5e6c8' stroke-width='5' stroke-linecap='round'/>"+
+ "<path d='M30 188c2-9 7-12 14-13m272 15c-3-8-7-11-14-13' fill='none' stroke='#789b70' stroke-width='2' stroke-linecap='round'/>"+trunk+leaves+
+ "<path d='M181 188c-26 3-47 2-69-1m69 0c26 4 51 0 72-3' fill='none' stroke='#ac987b' stroke-width='2' stroke-linecap='round' opacity='.6'/>"+
+ "<circle cx='60' cy='165' r='3' fill='#f0c4ca'/><circle cx='286' cy='174' r='3' fill='#f0c4ca'/><circle cx='311' cy='157' r='2.5' fill='#f3d477'/><path d='M52 130v-11m-5 6h10m248-16v-11m-5 5h10' stroke='#f3d477' stroke-width='2' stroke-linecap='round'/></svg>";
+}
+function buddySvg(){
+ return "<svg viewBox='0 0 360 180' aria-label='小树和陪伴的小伙伴'><path d='M0 141c45-15 81 7 128-3 48-10 79 11 121 1 42-9 75 2 111 10v31H0Z' fill='#b8d3a9'/>"+
+ "<circle cx='55' cy='42' r='14' fill='#f3d678' opacity='.86'/><path d='M0 0h360v110c-31-11-67-3-103 5-42 10-79-6-117-1-50 7-93-7-140 4Z' fill='#e5f1f3'/>"+
+ "<path d='M56 149V89m0 32L34 104m22 8 22-19' stroke='#765e46' stroke-width='6' stroke-linecap='round'/>"+
+ "<path d='M39 101c-17 0-23-14-15-25 6-8 15-9 23-4 0-12 10-18 19-13 9 5 10 14 4 21 12-2 20 7 16 16-4 9-16 12-26 6-6 7-14 7-21-1Z' fill='#85b28d' stroke='#668e70' stroke-width='2'/>"+
+ "<path d='M229 146c5-20 14-31 28-31 17 0 27 12 30 31' fill='#8fb9cf' stroke='#527a83' stroke-width='2'/><circle cx='258' cy='99' r='22' fill='#f2cfac' stroke='#bb9275' stroke-width='1.5'/><path d='M237 99c-4-19 8-31 24-30 14 1 23 12 19 26-9-9-23-11-43 4Z' fill='#364b42'/>"+
+ "<path d='m241 139-17 24m59-24 15 24' stroke='#435d4e' stroke-width='4' stroke-linecap='round'/>"+
+ "<path d='M303 142c7-12 24-12 32-2 10-2 18 8 13 17-4 8-21 10-29 8-14 1-22-9-16-18Z' fill='#fffaf0' stroke='#7c8278' stroke-width='1.7'/><path d='m313 140 1-11 10 7m5 2 7-9 2 13' fill='#fffaf0' stroke='#7c8278' stroke-width='1.7' stroke-linejoin='round'/></svg>";
+}
+function icon(name){
+ var paths={
+  chat:"<path d='M4 5.5h16v11H9l-5 4z'/><path d='M8 9h8M8 13h5'/>",
+  leaf:"<path d='M20 4C10 4 5 8 5 15c0 3 2 5 5 5 7 0 10-7 10-16Z'/><path d='M4 21c4-6 7-9 12-13'/>",
+  heart:"<path d='M20 8.5c0 5-8 10-8 10s-8-5-8-10a4 4 0 0 1 8-1 4 4 0 0 1 8 1Z'/>"
+ };
+ return "<svg viewBox='0 0 24 24' aria-hidden='true'>"+paths[name]+"</svg>";
+}
+function activeTab(){
+ if(["home","vent","analyzing","result","tree"].indexOf(state.page)>=0)return"home";
+ if(["release","play","complete"].indexOf(state.page)>=0)return"release";
+ return"partner";
+}
+function renderTabs(){
+ var items=[["home","想聊聊","chat"],["release","要宣泄","leaf"],["partner","想清楚","heart"]];
+ document.getElementById("tabs").innerHTML=items.map(function(item){return "<button class='tab "+(activeTab()===item[0]?"active":"")+"' data-act='nav' data-target='"+item[0]+"'>"+icon(item[2])+"<span>"+item[1]+"</span></button>"}).join("");
+}
+function header(kicker,title,link,linkClass,target,back){
+ return "<div class='pagehead'><div><div class='eyeline'>"+kicker+"</div><h2>"+title+"</h2></div><div class='row'>"+(back?"<button class='head-link' data-act='back'>‹ 返回</button>":"")+(link?"<button class='head-link "+(linkClass||"")+"' data-act='go' data-target='"+target+"'>"+link+"</button>":"")+"</div></div>";
+}
+function sceneHome(){
+ return "<div class='hero-scene'><span class='cloud one'></span><span class='cloud two'></span><span class='sun'></span><div class='scene-note'>有风，也会有<br>阳光的时候。</div><div class='home-tree'>"+treeSvg("lush")+"</div></div>";
+}
+function pageHome(){
+ return header("欢迎来到你的心情角落","情绪小树林","我的情绪树","", "tree",false)+sceneHome()+
+ "<div class='home-copy'><span class='pill'>今天也可以慢慢来</span><h2>今天心里有点什么吗？</h2><p>不用组织好，慢慢说。<br>我会在这里听着。</p></div>"+
+ "<div class='cta-wrap'><button class='primary full' data-act='go' data-target='vent'>开始倾诉　→</button></div><div class='beneath'>把烦恼先放在这里 ♡</div>";
+}
+function pageVent(){
+ return header("想聊聊 · 此刻只属于你","慢慢说给我听","", "", "",true)+
+ "<div class='soft-card row' style='align-items:center;margin-bottom:12px'><span style='font-size:23px'>✦</span><span class='caption'>你可以慢慢说，不需要一次讲完整。</span></div>"+
+ "<textarea class='textarea' id='ventInput' maxlength='500' placeholder='写下此刻心里最想说的话……'>"+esc(state.ventText)+"</textarea>"+
+ "<div class='between small muted' style='margin-top:5px'><span>内容只用于这次体验</span><span id='ventCount'>"+state.ventText.length+" / 500</span></div>"+
+ "<div class='chiprow'><button class='chip' data-act='fillTopic' data-text='今天的工作让我有点喘不过气。'>工作压力</button><button class='chip' data-act='fillTopic' data-text='有些关系里的话，我还没想好怎么说。'>关系</button><button class='chip' data-act='fillTopic' data-text='我也说不太清楚，只是心里闷闷的。'>说不清</button></div>"+
+ "<div class='card' style='margin:12px 0'><div class='caption'>小芽陪着你</div><div class='small muted' style='margin-top:5px'>“我还在听。你不需要马上解决。”</div></div>"+
+ "<button class='quiet full locked' aria-disabled='true'>语音转文字 · V1.1</button>"+
+ "<div class='cta-wrap'><button class='primary full' data-act='submitVent' "+(state.ventText.trim()?"":"disabled style='opacity:.5'")+">我说完了　→</button></div><div class='beneath'>你说的每一句，都值得被认真听见。</div>";
+}
+function pageAnalyzing(){
+ return "<div class='analyze'><div class='fireflies'>✦　✧　✦</div><div class='loader'>"+treeSvg("lush")+"</div><h2 class='serif' style='font-size:23px;margin:0 0 7px'>我在认真听懂这件事…</h2><p class='caption'>不急，我们先一起看见此刻的心情。</p><div class='pill'>正在整理 · 烦躁与委屈</div><button class='text-button' style='margin-top:25px' data-act='analysisDone'>看看这棵心情树 →</button></div>";
+}
+function pageResult(){
+ var kind=["light","withered","severe"][state.severity],levels=["轻度","中度","重度"];
+ return header("情绪有名字，也有轻重","我听见了。","", "", "",true)+
+ "<div class='tree-state'>"+treeSvg(kind)+"<div class='state-tag'>今天：有点累，正在慢慢恢复</div></div>"+
+ "<div class='result-intro'>刚才的事情让你消耗了很多。<br>这不是你不好，我们先照顾一下自己。</div>"+
+ "<div class='mood-tags'><span class='pill' style='background:#f8e1df;color:#91645c'>委屈</span><span class='pill' style='background:#f7edc9;color:#807047'>烦躁</span><span class='pill'>"+levels[state.severity]+" · 示例分析</span></div>"+
+ "<div class='between small muted'><span>树的状态示意</span><span>情绪没有好坏</span></div><div class='chiprow' style='justify-content:center'><button class='chip' data-act='severity' data-level='0'>轻轻低垂</button><button class='chip' data-act='severity' data-level='1'>枝叶稀疏</button><button class='chip' data-act='severity' data-level='2'>明显枯萎</button></div><button class='text-button full' data-act='safetyPreview'>查看“优先确认安全”承接示意</button>"+
+ "<div class='choice-row'><button class='choice-card' data-act='go' data-target='release'><span class='inline-icon'>☼</span><strong>要宣泄</strong><span>找一个小小出口</span></button><button class='choice-card' data-act='go' data-target='partner'><span class='inline-icon'>♡</span><strong>想清楚</strong><span>让情绪搭子陪你理一理</span></button></div>"+
+ "<div class='beneath'>不用马上想开，慢一点也算在往前走。</div>";
+}
+function pageSafety(){
+ return header("先照顾安全 · 再继续陪伴","我们先停在这里。","", "", "",false)+
+ "<div class='tree-state' style='background:linear-gradient(#dcebf0,#edf0df)'>"+treeSvg("severe")+"<div class='state-tag'>这会儿先不进入普通宣泄流程</div></div>"+
+ "<div class='result-intro'>刚才的内容听起来特别难熬。<br>我想先确认：你现在身边安全吗？</div>"+
+ "<div class='card'><div class='caption'>如果你正处于即时危险中，请优先联系所在地的紧急服务，或请一位可信任的人现在陪在你身边。</div><div class='divider'></div><div class='small muted'>这一步不需要你解释清楚，也不用一个人扛着。</div></div>"+
+ "<button class='primary full' style='margin-top:13px' data-act='safetySafe'>我现在安全，想继续聊聊</button><button class='secondary full' style='margin-top:9px' data-act='safetySupport'>我需要现实中的人陪着我</button><div class='beneath'>我们可以慢慢来，先让自己处在安全的地方。</div>";
+}
+function art(kind){
+ if(kind==="stretch")return "<svg viewBox='0 0 180 145' fill='none'><path d='M89 118V70m0 20L55 65m34 22 35-24' stroke='#836d54' stroke-width='7' stroke-linecap='round'/><circle cx='90' cy='47' r='19' fill='#f1cdaa' stroke='#c69b7d' stroke-width='2'/><path d='M72 48c0-21 11-31 24-28 10 2 15 11 13 23-10-8-23-6-37 5Z' fill='#46624e'/><path d='M36 50c-8-9-8-18 0-23m-9 43c-7 2-10 8-8 14m118-47c9-8 11-17 5-24m8 60c9 2 13 8 11 14' stroke='#edaeb3' stroke-width='3' stroke-linecap='round'/><path d='m35 34-3-10m114 1 4-10M62 112l-8 9m65-7 9 9' stroke='#e8c75d' stroke-width='3' stroke-linecap='round'/><path d='M25 122c25 8 99 8 130-1' stroke='#aac99b' stroke-width='3' stroke-linecap='round'/></svg>";
+ if(kind==="ice")return "<svg viewBox='0 0 180 145' fill='none'><path d='m45 35 84-8 19 68-77 24-35-32Z' fill='#d9f0f3' stroke='#8bbec7' stroke-width='3' stroke-linejoin='round'/><path d='m45 35 27 25 76-33M72 60l-1 59m38-67 2 57' stroke='#fff' stroke-width='3' stroke-linecap='round'/><path d='M128 126c8-10 14-17 12-28-1-8-6-13-10-17 0 8-9 12-9 22 0 9 4 17 7 23Z' fill='#f1cb67' stroke='#d5a849' stroke-width='2'/><path d='M35 122c33 12 74 9 106 0' stroke='#aecba1' stroke-width='3' stroke-linecap='round'/><path d='m68 47 13 2m26 39 15-8' stroke='#99ccd5' stroke-width='2' stroke-linecap='round'/></svg>";
+ if(kind==="breeze")return "<svg viewBox='0 0 180 145' fill='none'><path d='M43 83c13-1 17-10 28-10 15 0 15 15 4 19-7 3-12-1-13-5m20-22c19 0 19-15 34-15 15 0 16 15 5 20-7 3-13-1-14-5m5 40c15 0 17-12 29-12 13 0 15 13 6 17-6 3-11 0-12-4' stroke='#72aaba' stroke-width='4' stroke-linecap='round'/><path d='M126 46c16-5 28 4 31 16-9 0-14 7-19 14-9-8-14-18-12-30Z' fill='#a7c995' stroke='#7ea678' stroke-width='2'/><path d='M52 118c8-9 14-12 23-11m-7 19 9-10' stroke='#e9bf68' stroke-width='3' stroke-linecap='round'/><circle cx='43' cy='51' r='3' fill='#f0c5ca'/><circle cx='136' cy='105' r='3' fill='#f0c5ca'/></svg>";
+ if(kind==="sound")return "<svg viewBox='0 0 180 145' fill='none'><path d='M77 46c-17 0-29 11-29 26s12 26 29 26' stroke='#76a9ad' stroke-width='4' stroke-linecap='round'/><path d='M94 34c-23 0-41 16-41 38s18 38 41 38' stroke='#96c4bd' stroke-width='3' stroke-linecap='round'/><path d='M109 23c-31 0-55 21-55 49s24 49 55 49' stroke='#c4dcb0' stroke-width='2.5' stroke-linecap='round'/><path d='m97 58 15-13v53L97 84H82V58Z' fill='#f0d37a' stroke='#b99c51' stroke-width='2' stroke-linejoin='round'/><path d='M31 117c37 11 85 10 123 0' stroke='#a8c99a' stroke-width='3' stroke-linecap='round'/><path d='m37 42 4-8m99 3 5 8m-9 81 6 7' stroke='#edaeb3' stroke-width='3' stroke-linecap='round'/></svg>";
+ return "<svg viewBox='0 0 180 145' fill='none'><path d='M42 103c4-15 12-21 23-21 12 0 17 8 19 21m-2-7c4-13 10-19 20-19 12 0 18 9 20 23' stroke='#8eb28a' stroke-width='4' stroke-linecap='round'/><path d='M47 107c18 8 73 8 94-1' stroke='#b3cfa3' stroke-width='3' stroke-linecap='round'/><path d='M54 39c0-7 6-12 12-12s12 5 12 12v20c0 7-6 12-12 12s-12-5-12-12V39Zm39-4c0-7 6-12 12-12s12 5 12 12v24c0 7-6 12-12 12s-12-5-12-12V35Z' fill='#cbe7ed' stroke='#84b4c0' stroke-width='2'/><path d='M64 31v28m39-29v32' stroke='#fff' stroke-width='2' stroke-linecap='round'/><path d='M137 41c-9-8-21-3-20 8 1 7 10 13 20 20 10-7 19-13 20-20 1-11-11-16-20-8Z' fill='#f2cdd1' stroke='#dba9ae' stroke-width='2'/></svg>";
+}
+function pageRelease(){
+ var m=methods[state.method],dots=methods.map(function(x,i){return "<button class='"+(i===state.method?"active":"")+"' aria-label='切换到"+x.name+"' data-act='method' data-index='"+i+"'></button>"}).join("");
+ return header("要宣泄 · 轻轻选一个","现在，想怎么照顾自己？","","","",false)+
+ "<p class='caption' style='text-align:center;margin:0'>选一个现在用得上的方式</p>"+
+ "<div class='method-area'><button class='arrow-button left' aria-label='上一种' data-act='methodStep' data-dir='-1'>‹</button><button class='arrow-button right' aria-label='下一种' data-act='methodStep' data-dir='1'>›</button>"+
+ "<div class='method-card "+m.color+"'><span class='pill'>"+(state.method+1)+" / 5 · "+m.emotion+"</span><div class='method-art'>"+art(m.icon)+"</div><h3>"+m.name+"</h3><div class='caption'>"+m.hint+"</div><p>"+m.desc+"</p><button class='primary method-cta' data-act='startPlay'>"+m.button+"　→</button></div></div>"+
+ "<div class='dots'>"+dots+"</div><div class='beneath'>不合适可以换一个，不用勉强。</div>";
+}
+function pagePlay(){
+ var m=methods[state.method], content="";
+ if(state.method===0){
+  var moves=["甩甩手","耸耸肩","伸个懒腰","轻轻跺脚"];
+  content="<div class='play-scene'>"+treeSvg("lush")+"</div><p class='caption' style='text-align:center'>"+moves[state.move%4]+" · 跟着自己的节奏来</p><div class='movement'>"+moves.map(function(x,i){return "<button class='"+(i===state.move%4?"active":"")+"' data-act='move' data-index='"+i+"'>"+x+"</button>"}).join("")+"</div><button class='secondary full' data-act='nextMove'>"+(state.move>=3?"完成这组动作":"做完了，下一步 →")+"</button>";
+ }else if(state.method===1){
+  content="<div class='play-scene'><div class='ice'><span class='ice-etch'>"+esc(state.iceText||"把烦恼写在这里")+"</span></div><svg style='position:absolute;right:25px;bottom:18px;width:44px;height:61px' viewBox='0 0 44 61' aria-label='小火把'><path d='M22 5c8 10 8 15 0 21-8-6-8-11 0-21Z' fill='#efc96f' stroke='#d6a94d' stroke-width='2'/><rect x='14' y='24' width='16' height='29' rx='4' fill='#a07b59' stroke='#7e654d' stroke-width='2'/><path d='M17 30h10m-10 5h10' stroke='#d7b187' stroke-width='2' stroke-linecap='round'/><path d='M10 55h24' stroke='#9bb890' stroke-width='3' stroke-linecap='round'/></svg></div><input class='inputbox' id='iceInput' maxlength='26' placeholder='写一句此刻最烦恼的话' value='"+esc(state.iceText)+"'><div class='warm-progress'>"+[0,1,2].map(function(i){return "<i class='"+(i<state.iceHeat?"on":"")+"'></i>"}).join("")+"</div><button class='secondary full' data-act='warmIce'>"+(state.iceHeat>=2?"冰块融化啦，放下这一点":"点亮火把，暖一暖冰块")+"</button>";
+ }else if(state.method===2){
+  content="<div class='play-scene'><div class='breath-cloud' style='transform:translateX("+(state.breaths*15)+"px) scale("+(1-state.breaths*.12)+");opacity:"+(1-state.breaths*.12)+"'></div><div class='breath-count'>"+(state.breaths>=3?"云朵已经飘远一点啦":"第 "+(state.breaths+1)+" 次轻轻吹气")+"</div></div><p class='caption' style='text-align:center'>先吸一口气，再按下面的按钮送出一点风。</p><button class='secondary full' data-act='blow'>按一下，吹走一点点　→</button>";
+ }else if(state.method===3){
+  var opts=["轻声喊一句话","哈哈笑一笑","轻轻哼唱","只听白噪音"];
+  content="<div class='play-scene'><div class='soundwaves'><span>♪</span></div></div><div class='card'><div class='caption'>选一种让你舒服的方式</div><div class='sound-option'>"+opts.map(function(x){return "<button class='"+(state.screamMode===x?"active":"")+"' data-act='screamMode' data-value='"+x+"'>"+x+"</button>"}).join("")+"</div><div class='small-note'>原型不录制、不上传声音。请先看看周围是否适合发声，也可以随时只听声音。</div></div><button class='secondary full' style='margin-top:11px' data-act='releaseScream'>"+(state.screamMode==="只听白噪音"?"播放一会儿":"好啦，声音出去一点了")+"　→</button>";
+ }else{
+  content="<div class='play-scene'><div class='soundwaves'><span>♫</span></div></div><div class='caption'>挑一种今天喜欢的声音</div><div class='sound-option'>"+["雨声","风声","森林声","远处海浪"].map(function(x){return "<button class='"+(state.selectedSound.indexOf(x)>=0?"active":"")+"' data-act='sound' data-value='"+x+"'>"+x+"</button>"}).join("")+"</div><div class='caption'>想听多久？</div><div class='duration'>"+[5,10,20].map(function(x){return "<button class='"+(state.duration===x?"active":"")+"' data-act='duration' data-value='"+x+"'>"+x+" 分钟</button>"}).join("")+"</div><button class='secondary full' data-act='toggleSound'>"+(state.soundOn?"暂停声音　Ⅱ · "+formatTime(state.remaining):"开始听一会儿　▶")+"</button><div class='small-note' style='text-align:center;margin-top:8px'>声音在本机生成，不录音、不上传。离开页面会自动停止。</div><button class='text-button full' data-act='finishNoise'>结束这次安静陪伴</button>";
+ }
+ return header("正在照顾自己 · "+m.name,m.name,"换一种","blue","release",true)+
+ "<div class='play-header'><span class='pill'>"+m.emotion+"</span><span class='play-step'>"+(state.method+1)+" / 5</span></div>"+
+ "<div class='soft-card caption'>"+m.desc+"</div>"+content+
+ "<div class='divider'></div><div class='between'><button class='text-button' data-act='go' data-target='release'>‹ 换一个方式</button><button class='text-button' data-act='go' data-target='complete'>结束这次体验</button></div>";
+}
+function pageComplete(){
+ return "<div class='end'><span class='pill'>刚刚完成 · "+methods[state.method].name+"</span><h2>你刚刚照顾了自己一下。</h2><p>小树舒展开一点点就很好。<br>不用要求自己马上痊愈。</p><div class='tree-state'>"+treeSvg("lush")+"<div class='state-tag'>慢慢恢复中 · 今天的你有在照顾自己</div></div><button class='primary full' data-act='again'>再抽一次　↻</button><button class='secondary full' style='margin-top:9px' data-act='go' data-target='partner'>想清楚　→</button><button class='text-button' data-act='endSession'>结束本次体验</button></div>";
+}
+function chatMessages(){
+ return state.messages.map(function(m){return "<div class='bubble-msg "+(m.who==="ai"?"ai":"user")+"'>"+esc(m.text)+"</div>"}).join("");
+}
+function pagePartner(){
+ return header("想清楚 · 情绪搭子","我陪你理一理","我的档案","blue","archive",false)+"<div class='chat-scene'>"+buddySvg()+"<div class='chat-caption'>慢慢来，我们只看眼前这一小步。</div></div>"+
+ "<div class='chatlog' id='chatlog'>"+chatMessages()+"</div>"+
+ "<div class='quick-asks'><button data-act='quickAsk' data-text='我想先把事情说完。'>先听我说</button><button data-act='quickAsk' data-text='我想分清哪些是事实，哪些是猜测。'>分清事实和猜测</button><button data-act='quickAsk' data-text='我想一起想一个很小的下一步。'>想一个小行动</button></div>"+
+ "<div class='chat-compose'><input class='inputbox' id='chatInput' placeholder='说说你现在最在意的部分…'><button class='primary' data-act='sendChat' aria-label='发送'>➜</button></div>"+
+ "<div class='between small muted' style='margin-top:8px'><span>一次只聊一件事 · 不想行动也可以</span><button class='text-button' data-act='endSession'>结束</button></div>";
+}
+function pageTree(){
+ var weekly=[25,45,32,68,53,82,41];
+ return header("我的情绪树 · 看见照顾自己的痕迹","我的小树，正在长大。","","","","true")+
+ "<div class='tree-state'>"+treeSvg("lush")+"<div class='state-tag'>最近一次：委屈 · 烦躁，正在恢复</div></div>"+
+ "<div class='metric-grid'><div class='metric'><strong>4 次</strong><span>近 7 天<br>照顾自己</span></div><div class='metric'><strong>呼吸</strong><span>最近使用<br>的方式</span></div><div class='metric'><strong>1 个</strong><span>正在进行<br>的小行动</span></div></div>"+
+ "<div class='card'><div class='between'><strong class='serif'>这一周的自我照顾</strong><span class='small muted'>每一格都是你</span></div><div class='week-bars'>"+weekly.map(function(h,i){return "<span style='height:"+h+"%' data-day='"+["一","二","三","四","五","六","日"][i]+"'></span>"}).join("")+"</div></div>"+
+ "<div class='record-card card'><div class='record-row'><span>疗愈记录 · 12 次</span><button data-act='toggleRecords'>查看记录　"+(state.recordsOpen?"⌃":"→")+"</button></div>"+(state.recordsOpen?"<div class='record-line'><span>今天 · 吹走不开心</span><span>前有点紧 · 后松一点</span></div><div class='record-line'><span>昨天 · 森林白噪音</span><span>觉得有帮助</span></div><div class='record-line'><span>9 月 28 日 · 消气操</span><span>完成 4 个动作</span></div>":"")+
+ "<div class='record-row'><span>行动记录 · 1 个小行动</span><button data-act='go' data-target='partner'>继续梳理　→</button></div>"+
+ "<div class='record-row'><span>年轮 · 7 个成长节点</span><button data-act='toggleYear'>"+(state.yearOpen?"收起　⌃":"慢慢看看　→")+"</button></div>"+(state.yearOpen?"<div class='year-ring'><div><strong>我照顾过自己</strong><span>七个温柔的成长节点</span></div></div><div class='small-note' style='text-align:center'>第一次倾诉 · 完成第一次疗愈 · 为自己留出休息<br>年轮记下经历，不评判状态。</div>":"")+
+ "<div class='record-row'><span>情绪森林 · 后续开放</span><button class='locked' aria-disabled='true'>敬请期待　♡</button></div></div>"+
+ "<button class='secondary full' style='margin-top:12px' data-act='go' data-target='vent'>再聊一会儿</button>";
+}
+function pageArchive(){
+ return header("我的档案 · 由你决定保存什么","只留下你确认过的内容","","","","true")+
+ "<div class='soft-card caption' style='margin-bottom:12px'>档案保存的是简短摘要，不保存完整倾诉原文。你可以随时编辑或删除。</div>"+
+ "<div class='card'><div class='between'><strong class='serif'>长期记忆</strong><button class='toggle "+(state.memoryEnabled?"on":"")+"' data-act='toggleMemory' aria-label='切换长期记忆'></button></div><div class='small muted' style='margin-top:5px'>"+(state.memoryEnabled?"仅在你确认后保存":"已关闭长期记忆")+"</div></div>"+
+ "<div class='card' style='margin-top:10px'><div class='between'><strong class='serif'>我说过的事</strong><span class='small muted'>可修改 · 可删除</span></div>"+state.memories.map(function(m,i){return "<div class='memory "+(m.deleted?"deleted":"")+"'><div>"+esc(m.title)+"<small>"+esc(m.meta)+"</small></div><button data-act='deleteMemory' data-index='"+i+"'>"+(m.deleted?"已删除":"删除")+"</button></div>"}).join("")+"</div>"+
+ "<div class='card' style='margin-top:10px'><strong class='serif'>档案里还可以有</strong><div class='choice-row'><div class='choice-card'><strong>重要关系</strong><span>你主动提到的人</span></div><div class='choice-card'><strong>沟通偏好</strong><span>先安慰，再建议</span></div><div class='choice-card'><strong>反复主题</strong><span>工作 · 家庭 · 关系</span></div><div class='choice-card'><strong>来源会话</strong><span>查看摘要出处</span></div></div></div>"+
+ "<div class='beneath'>你的故事，由你自己决定。</div>";
+}
+function pageSummary(){
+ var facts=["事情：这次工作安排让我感到被催促","感受：有些委屈，也有点疲惫","我在意：希望自己的付出被看见","下一步：明天先和同事确认优先级"];
+ return header("会话总结 · 只保存你愿意留下的","这次我们聊到…","","","","true")+
+ "<div class='card'><p class='caption' style='margin:0 0 8px'>请选择想放进“我的档案”的内容：</p>"+facts.map(function(t,i){return "<label class='summary-check'><input type='checkbox' data-act='summaryChoice' data-index='"+i+"' "+(state.saveChoice[i]?"checked":"")+"><span>"+t+"</span></label>"}).join("")+"</div>"+
+ "<div class='small-note' style='margin:10px 3px'>未勾选的内容不会写入档案。你也可以选择不保存。</div>"+
+ "<button class='primary full' data-act='saveSummary'>确认并保存所选内容</button><button class='quiet full' style='margin-top:9px' data-act='finishNoSave'>不保存，结束体验</button><div class='beneath'>只在你点头以后，记下这一小段。</div>";
+}
+function render(){
+ var pages={home:pageHome,vent:pageVent,analyzing:pageAnalyzing,result:pageResult,safety:pageSafety,release:pageRelease,play:pagePlay,complete:pageComplete,partner:pagePartner,tree:pageTree,archive:pageArchive,summary:pageSummary};
+ var names={home:"情绪小树林 · 首页",vent:"慢慢说给我听",analyzing:"正在倾听",result:"我的情绪树",safety:"先照顾安全",release:"选择一种宣泄方式",play:"照顾自己的小练习",complete:"你刚刚照顾了自己",partner:"情绪搭子",tree:"我的情绪树",archive:"我的档案",summary:"会话总结"};
+ document.getElementById("screen").innerHTML=(pages[state.page]||pageHome)();
+ document.title=names[state.page]+"｜情绪小树林";
+ document.querySelector(".app").classList.toggle("safety-mode",state.page==="safety");
+ document.getElementById("tabs").style.display=state.page==="safety"?"none":"grid";
+ renderTabs();
+ var flows=document.querySelectorAll("[data-flow]");
+ flows.forEach(function(el){el.classList.toggle("active",el.getAttribute("data-flow")===activeTab())});
+ var screen=document.getElementById("screen");screen.scrollTop=0;
+}
+function showToast(message){
+ var t=document.getElementById("toast");t.textContent=message;t.classList.add("show");clearTimeout(state.toastTimer);state.toastTimer=setTimeout(function(){t.classList.remove("show")},2100);
+}
+function setPage(page){if(state.page==="play"&&page!=="play"&&state.method===4){stopNoise();state.remaining=0}state.page=page;document.getElementById("guard").hidden=true;render()}
+function formatTime(seconds){var value=Math.max(0,seconds||0);return Math.floor(value/60)+":"+String(value%60).padStart(2,"0")}
+function stopNoise(){
+ if(state.audioTimer){clearInterval(state.audioTimer);state.audioTimer=null}
+ state.audioNodes.forEach(function(node){try{node.stop()}catch(e){}});state.audioNodes=[];
+ if(state.audioContext){var ctx=state.audioContext;state.audioContext=null;try{ctx.close()}catch(e){}}
+ state.soundOn=false;
+}
+function startNoise(seconds){
+ var Audio=window.AudioContext||window.webkitAudioContext;
+ if(!Audio){showToast("当前浏览器暂不支持声音播放");return false}
+ stopNoise();
+ var ctx=new Audio(),master=ctx.createGain();state.audioContext=ctx;master.gain.value=.12;master.connect(ctx.destination);
+ state.selectedSound.forEach(function(sound){
+  var buffer=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate),data=buffer.getChannelData(0);
+  for(var i=0;i<data.length;i++)data[i]=Math.random()*2-1;
+  var source=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();
+  source.buffer=buffer;source.loop=true;filter.type="lowpass";
+  if(sound==="雨声"){filter.frequency.value=1450;filter.Q.value=.35;gain.gain.value=.16}
+  else if(sound==="风声"){filter.frequency.value=320;filter.Q.value=.7;gain.gain.value=.3}
+  else if(sound==="森林声"){filter.frequency.value=2300;filter.Q.value=.25;gain.gain.value=.1}
+  else{filter.frequency.value=720;filter.Q.value=.8;gain.gain.value=.2}
+  source.connect(filter);filter.connect(gain);gain.connect(master);source.start();state.audioNodes.push(source);
+ });
+ state.remaining=seconds||state.duration*60;state.soundOn=true;
+ state.audioTimer=setInterval(function(){
+  state.remaining=Math.max(0,state.remaining-1);
+  var button=document.querySelector("[data-act='toggleSound']");
+  if(state.remaining===0){stopNoise();render();showToast("这段安静陪伴结束了");return}
+  if(button)button.textContent="暂停声音　Ⅱ · "+formatTime(state.remaining);
+ },1000);
+ return true;
+}
+function goNav(target){
+ var active=["vent","play","partner"].indexOf(state.page)>=0;
+ if(active&&target!==state.page){
+  state.guardTarget=target;document.getElementById("guard").hidden=false;return;
+ }
+ setPage(target);
+}
+function finishSession(save){
+ if(save){setPage("summary");return}
+ state.ventText="";state.messages=[{who:"ai",text:"我陪你把这件事理一理。刚才这件事，最让你难受的是哪一部分？"}];setPage("home");showToast("这次体验已结束");
+}
+function sendMessage(text){
+ var value=(text||"").trim();if(!value)return;
+ state.messages.push({who:"user",text:value});
+ state.messages.push({who:"ai",text:"我听见了。我们先不用急着解决。你愿意的话，可以一起分清：哪些是已经发生的事实，哪些是心里的担心？"});
+ render();
+}
+document.getElementById("screen").addEventListener("input",function(e){
+ if(e.target.id==="ventInput"){
+  state.ventText=e.target.value;var c=document.getElementById("ventCount");if(c)c.textContent=state.ventText.length+" / 500";
+  var submit=document.querySelector("[data-act='submitVent']");if(submit){submit.disabled=!state.ventText.trim();submit.style.opacity=state.ventText.trim()?"1":".5"}
+ }
+ if(e.target.id==="iceInput"){state.iceText=e.target.value;var etched=document.querySelector(".ice-etch");if(etched)etched.textContent=state.iceText||"把烦恼写在这里"}
+});
+document.getElementById("screen").addEventListener("change",function(e){
+ if(e.target.matches("[data-act='summaryChoice']"))state.saveChoice[Number(e.target.dataset.index)]=e.target.checked;
+});
+document.getElementById("screen").addEventListener("click",function(e){
+ var b=e.target.closest("[data-act]");if(!b)return;
+ var act=b.dataset.act,target=b.dataset.target;
+ if(act==="nav"){goNav(target);return}
+ if(act==="go"){if(target==="home"||target==="release"||target==="partner")goNav(target);else setPage(target);return}
+ if(act==="back"){if(state.page==="vent")setPage("home");else if(state.page==="result")setPage("vent");else if(state.page==="play")setPage("release");else if(state.page==="tree"||state.page==="archive")setPage("home");else setPage("home");return}
+ if(act==="fillTopic"){state.ventText=b.dataset.text;render();return}
+ if(act==="submitVent"){if(!state.ventText.trim())return;setPage("analyzing");return}
+ if(act==="analysisDone"){setPage("result");return}
+ if(act==="severity"){state.severity=Number(b.dataset.level);render();return}
+ if(act==="safetyPreview"){setPage("safety");return}
+ if(act==="safetySafe"){state.messages=[{who:"ai",text:"谢谢你告诉我你现在安全。我会在这里陪着你。我们可以先聊聊此刻最需要被听见的那部分。"}];setPage("partner");return}
+ if(act==="safetySupport"){showToast("请联系一位你信任的人，让 TA 现在陪在你身边");return}
+ if(act==="methodStep"){state.method=(state.method+Number(b.dataset.dir)+methods.length)%methods.length;setPage("release");return}
+ if(act==="method"){state.method=Number(b.dataset.index);render();return}
+ if(act==="startPlay"){stopNoise();state.remaining=0;state.iceHeat=0;state.breaths=0;state.move=0;setPage("play");return}
+ if(act==="move"){state.move=Number(b.dataset.index);render();return}
+ if(act==="nextMove"){if(state.move>=3){setPage("complete")}else{state.move++;render()}return}
+ if(act==="warmIce"){if(!state.iceText.trim()){showToast("先写下一句烦恼，再陪冰块融化");return}if(state.iceHeat>=2){setPage("complete")}else{state.iceHeat++;render()}return}
+ if(act==="blow"){if(state.breaths>=2){setPage("complete")}else{state.breaths++;render()}return}
+ if(act==="screamMode"){state.screamMode=b.dataset.value;render();return}
+ if(act==="releaseScream"){setPage("complete");return}
+ if(act==="sound"){var wasPlaying=state.soundOn,left=state.remaining,s=b.dataset.value,ix=state.selectedSound.indexOf(s);if(ix>=0)state.selectedSound.splice(ix,1);else state.selectedSound.push(s);if(!state.selectedSound.length)state.selectedSound=[s];if(wasPlaying){stopNoise();startNoise(left)}render();return}
+ if(act==="duration"){state.duration=Number(b.dataset.value);render();return}
+ if(act==="toggleSound"){if(state.soundOn){stopNoise();render();showToast("已暂停声音")}else if(startNoise(state.remaining||state.duration*60)){render();showToast("声音陪伴已开始")}return}
+ if(act==="finishNoise"){setPage("complete");return}
+ if(act==="again"){state.method=(state.method+1)%methods.length;setPage("release");return}
+ if(act==="sendChat"){var input=document.getElementById("chatInput");sendMessage(input?input.value:"");return}
+ if(act==="quickAsk"){sendMessage(b.dataset.text);return}
+ if(act==="endSession"){finishSession(true);return}
+ if(act==="toggleRecords"){state.recordsOpen=!state.recordsOpen;render();return}
+ if(act==="toggleYear"){state.yearOpen=!state.yearOpen;render();return}
+ if(act==="toggleMemory"){state.memoryEnabled=!state.memoryEnabled;render();showToast(state.memoryEnabled?"长期记忆已开启":"长期记忆已关闭");return}
+ if(act==="deleteMemory"){var item=state.memories[Number(b.dataset.index)];if(item){item.deleted=true;render();showToast("这条记忆已从档案移除")}return}
+ if(act==="saveSummary"){var count=state.saveChoice.filter(Boolean).length;if(!count){showToast("先选一条愿意保存的内容，或选择不保存");return}if(state.memoryEnabled){state.memories.unshift({title:"本次会话摘要（"+count+" 条）",meta:"刚刚保存 · 由你确认",deleted:false})}state.ventText="";setPage("home");showToast(state.memoryEnabled?"已把你确认的内容放进档案":"长期记忆已关闭，没有保存内容");return}
+ if(act==="finishNoSave"){state.ventText="";setPage("home");showToast("没有保存任何内容");return}
+ if(act==="guardContinue"){document.getElementById("guard").hidden=true;return}
+ if(act==="guardSave"){var dest=state.guardTarget;document.getElementById("guard").hidden=true;if(state.page==="partner")state.messages.push({who:"ai",text:"我先把这次对话留在当前体验里，档案内容仍由你确认。"});setPage(dest);showToast("进度已保留");return}
+ if(act==="guardDiscard"){var dest2=state.guardTarget;if(state.page==="vent")state.ventText="";if(state.page==="partner")state.messages=[{who:"ai",text:"我陪你把这件事理一理。刚才这件事，最让你难受的是哪一部分？"}];setPage(dest2);showToast("已离开当前体验");return}
+});
+document.getElementById("tabs").addEventListener("click",function(e){
+ var b=e.target.closest("[data-act='nav']");
+ if(b)goNav(b.dataset.target);
+});
+document.getElementById("screen").addEventListener("keydown",function(e){
+ if(e.key==="Enter"&&e.target.id==="chatInput"){e.preventDefault();sendMessage(e.target.value)}
+});
+document.getElementById("guard").addEventListener("click",function(e){if(e.target===this)this.hidden=true});
+document.querySelectorAll(".chapter-nav [data-act='go']").forEach(function(b){b.addEventListener("click",function(){setPage(b.dataset.target)})});
+render();
+})();
+</script>
+</body>
+</html>
